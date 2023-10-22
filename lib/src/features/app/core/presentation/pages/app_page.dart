@@ -4,9 +4,10 @@ import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/cubit/set_page_cubit.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/cubit/user_info_cubit.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/widgets/drawer_item.dart';
 import 'package:travel_ease_app/src/features/app/features/home/presentation/pages/home_page.dart';
+import 'package:travel_ease_app/src/features/auth/auth_injector.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/pages/login_page.dart';
-import 'package:travel_ease_app/src/features/auth/features/logout/logout_injector.dart';
 import 'package:travel_ease_app/src/features/auth/features/logout/presentation/bloc/logout_cubit.dart';
 
 class AppPage extends StatefulWidget {
@@ -19,12 +20,11 @@ class AppPage extends StatefulWidget {
 class _AppPageState extends State<AppPage> {
   final SetPageCubit setPageCubit = SetPageCubit();
   final UserInfoCubit userInfoCubit = appInjector<UserInfoCubit>();
-  final LogOutCubit logOutCubit = logOutInjector<LogOutCubit>();
+  final LogoutCubit logOutCubit = authInjector<LogoutCubit>();
 
   final List<Widget> pages = [
+    const Scaffold(),
     const HomePage(),
-    const Scaffold(),
-    const Scaffold(),
     const Scaffold(),
   ];
 
@@ -47,7 +47,7 @@ class _AppPageState extends State<AppPage> {
       child: BlocListener<UserInfoCubit, UserInfoState>(
         listener: (context, state) {
           if (state is UserInfoError) {
-            // _logOut();
+            _logout();
           }
         },
         child: WillPopScope(
@@ -62,73 +62,36 @@ class _AppPageState extends State<AppPage> {
 
                 return Scaffold(
                   appBar: AppBar(
-                    title: Text(selectedPage.title),
+                    title: Text(selectedPage.title.toUpperCase()),
                     backgroundColor: PrimaryColor.navyBlack,
                     actions: [
                       IconButton(
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,
-                        icon: const Icon(Icons.shopping_cart_outlined),
-                        onPressed: () {},
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          setPageCubit.setPage(1);
+                        },
                       )
                     ],
                   ),
                   drawer: Drawer(
-                    child: Column(
-                      children: [
-                        SizedBox(height: safePadding + 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Icon(
-                              Icons.account_circle,
-                              size: 80,
-                            ),
-                            BlocBuilder<UserInfoCubit, UserInfoState>(
-                              builder: (context, state) {
-                                if (state is UserInfoLoaded) {
-                                  final user = state.userEntity;
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(user.displayName),
-                                      Text(user.email),
-                                    ],
-                                  );
-                                }
-                                return const Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("User"),
-                                    Text("user@gmail.com"),
-                                  ],
-                                );
-                              },
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 60),
-                        ListTile(
-                          leading: Container(
-                            height: 45,
-                            width: 45,
-                            decoration: BoxDecoration(
-                              color: PrimaryColor.lightGrey,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(10)),
-                            ),
-                            child: const Icon(Icons.logout),
-                          ),
-                          title: const Text("Log Out"),
-                          onTap: _logOut,
-                        ),
-                      ],
+                    child: DrawerItem(
+                      safePadding: safePadding,
+                      onLogout: _logout,
                     ),
                   ),
                   bottomNavigationBar: Theme(
                     data: Theme.of(context).copyWith(
-                      canvasColor: PrimaryColor.navyBlack,
+                      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                        backgroundColor: PrimaryColor.navyBlack,
+                        selectedItemColor: PrimaryColor.pureWhite,
+                        unselectedItemColor: PrimaryColor.pureWhite,
+                        selectedLabelStyle: TextStyle(
+                          color: PrimaryColor.pureWhite,
+                        ),
+                        showUnselectedLabels: false,
+                      ),
                     ),
                     child: BottomNavigationBar(
                       currentIndex: selectedPage.index,
@@ -137,24 +100,19 @@ class _AppPageState extends State<AppPage> {
                       },
                       items: const [
                         BottomNavigationBarItem(
+                          icon: Icon(Icons.room_outlined),
+                          activeIcon: Icon(Icons.room),
+                          label: "ATTRACTIONS",
+                        ),
+                        BottomNavigationBarItem(
                           icon: Icon(Icons.home_outlined),
                           activeIcon: Icon(Icons.home),
                           label: "HOME",
                         ),
                         BottomNavigationBarItem(
-                          icon: Icon(Icons.favorite_border),
-                          activeIcon: Icon(Icons.favorite),
-                          label: "WISHLIST",
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.shopping_bag_outlined),
-                          activeIcon: Icon(Icons.shopping_bag),
-                          label: "ORDER",
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.person_outline_outlined),
-                          activeIcon: Icon(Icons.person),
-                          label: "PROFILE",
+                          icon: Icon(Icons.favorite_outline),
+                          activeIcon: Icon(Icons.favorite_rounded),
+                          label: "FAVOURITE",
                         ),
                       ],
                     ),
@@ -169,8 +127,8 @@ class _AppPageState extends State<AppPage> {
     );
   }
 
-  void _logOut() {
-    logOutCubit.logOut();
+  void _logout() {
+    logOutCubit.logout();
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (context) => const LoginPage(),

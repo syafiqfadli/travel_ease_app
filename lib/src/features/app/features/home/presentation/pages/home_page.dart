@@ -27,9 +27,9 @@ class _HomePageState extends State<HomePage> {
   final Completer<GoogleMapController> completerController =
       Completer<GoogleMapController>();
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+  static const CameraPosition _initPosition = CameraPosition(
+    target: LatLng(2.1926, 102.2505),
+    zoom: 14.45,
   );
 
   @override
@@ -38,88 +38,111 @@ class _HomePageState extends State<HomePage> {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: placesCubit),
+        BlocProvider(create: (context) => placesCubit),
         BlocProvider(create: (context) => selectPlaceCubit),
       ],
-      child: GestureDetector(
-        // onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Stack(
-          children: [
-            GoogleMap(
-              mapType: MapType.normal,
-              initialCameraPosition: _kGooglePlex,
-              onMapCreated: (GoogleMapController controller) {
-                completerController.complete(controller);
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Column(
-                children: [
-                  CustomInputField(
-                    textController: placeController,
-                    hint: "Search Place...",
-                    suffixIcon: const Icon(Icons.search),
-                    hasBorder: true,
-                    onFieldSubmitted: (value) {
-                      _searchPlace();
-                    },
+      child: Stack(
+        children: [
+          GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: _initPosition,
+            onMapCreated: (GoogleMapController controller) {
+              completerController.complete(controller);
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            child: Column(
+              children: [
+                CustomInputField(
+                  textController: placeController,
+                  hint: "Search Place...",
+                  suffixIcon: IconButton(
+                    onPressed: () => _searchPlace(),
+                    icon: const Icon(Icons.search),
                   ),
-                  const SizedBox(height: 5),
-                  BlocBuilder<PlacesCubit, PlacesState>(
-                    builder: (context, state) {
-                      if (state is PlacesLoaded && placeController.text != '') {
-                        final places = state.places;
+                  hasBorder: true,
+                  onChanged: (value) {
+                    if (value == '') {
+                      placesCubit.clearSearch();
+                    }
+                  },
+                  onFieldSubmitted: (_) => _searchPlace(),
+                ),
+                const SizedBox(height: 5),
+                BlocBuilder<PlacesCubit, PlacesState>(
+                  builder: (context, state) {
+                    if (state is PlacesLoaded) {
+                      final places = state.places;
 
-                        return Container(
-                          height: 200,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10)),
-                            color: PrimaryColor.pureWhite,
-                          ),
-                          width: width,
-                          child: ListView.builder(
-                            itemCount: places.length,
-                            itemBuilder: (context, index) {
-                              return PlaceCard(place: places[index]);
-                            },
-                          ),
-                        );
+                      if (places.isEmpty) {
+                        return const SizedBox.shrink();
                       }
 
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                ],
-              ),
+                      return Container(
+                        height: places.length > 3 ? 200 : null,
+                        width: width,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          color: PrimaryColor.pureWhite,
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: places.length <= 3,
+                          itemCount: places.length,
+                          itemBuilder: (context, index) {
+                            return PlaceCard(place: places[index]);
+                          },
+                        ),
+                      );
+                    }
+
+                    if (state is PlacesLoading) {
+                      return Container(
+                        height: 100,
+                        width: width,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          color: PrimaryColor.pureWhite,
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ],
             ),
-            BlocBuilder<SelectPlaceCubit, PlaceEntity?>(
-              builder: (context, state) {
-                return Visibility(
-                  visible: state == null ? false : true,
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: state == null
-                        ? const SizedBox.shrink()
-                        : PlaceDetailsCard(
-                            place: state,
-                            completerController: completerController,
-                          ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+          ),
+          BlocBuilder<SelectPlaceCubit, PlaceEntity?>(
+            builder: (context, state) {
+              return Visibility(
+                visible: state != null,
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: state == null
+                      ? const SizedBox.shrink()
+                      : PlaceDetailsCard(
+                          place: state,
+                          completerController: completerController,
+                        ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 
-  Future<void> _searchPlace() async {
+  void _searchPlace() {
     final String query = placeController.text;
 
     placesCubit.searchPlaces(query);

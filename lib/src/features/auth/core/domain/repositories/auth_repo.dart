@@ -6,8 +6,9 @@ import 'package:travel_ease_app/src/features/auth/core/domain/entities/token_ent
 
 abstract class AuthRepo {
   Future<Either<Failure, TokenEntity>> logIn(AuthEntity authEntity);
-  Future<Either<Failure, void>> logOut();
+  Future<Either<Failure, void>> logout();
   Future<Either<Failure, String>> signUp(AuthEntity authEntity);
+  Future<Either<Failure, String>> resetPassword(AuthEntity authEntity);
 }
 
 class AuthRepoImpl implements AuthRepo {
@@ -36,7 +37,17 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<Either<Failure, void>> logOut() async {
-    return await authDataSource.logOut();
+  Future<Either<Failure, void>> logout() async {
+    return await authDataSource.logout();
+  }
+
+  @override
+  Future<Either<Failure, String>> resetPassword(AuthEntity authEntity) async {
+    final restEither = await authDataSource.resetPassword(authEntity);
+
+    return restEither.fold(
+      (failure) => Left(SystemFailure(message: failure.message)),
+      (message) => Right(message),
+    );
   }
 }

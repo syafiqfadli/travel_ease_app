@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:travel_ease_app/src/features/auth/features/login/login_injector.dart';
+import 'package:travel_ease_app/src/features/auth/auth_injector.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/bloc/token_cubit.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/pages/login_page.dart';
 import 'package:travel_ease_app/src/src_injector.dart';
@@ -25,7 +25,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  final TokenCubit tokenCubit = loginInjector<TokenCubit>();
+  final TokenCubit tokenCubit = authInjector<TokenCubit>();
 
   @override
   void initState() {
@@ -39,6 +39,7 @@ class _MainAppState extends State<MainApp> {
       value: tokenCubit,
       child: MaterialApp(
         title: 'Travel Ease',
+        debugShowCheckedModeBanner: false,
         home: tokenCubit.state != null ? const AppPage() : const LoginPage(),
       ),
     );

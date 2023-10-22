@@ -5,10 +5,11 @@ import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/input_validator.dart';
 import 'package:travel_ease_app/src/core/utils/services.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/pages/app_page.dart';
+import 'package:travel_ease_app/src/features/auth/auth_injector.dart';
 import 'package:travel_ease_app/src/features/auth/core/domain/entities/auth_entity.dart';
 import 'package:travel_ease_app/src/features/auth/core/presentation/widgets/auth_input_field.dart';
-import 'package:travel_ease_app/src/features/auth/features/login/login_injector.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/bloc/login_cubit.dart';
+import 'package:travel_ease_app/src/features/auth/features/reset_password/presentation/pages/reset_password_page.dart';
 import 'package:travel_ease_app/src/features/auth/features/signup/presentation/pages/signup_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -19,7 +20,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final LoginCubit loginCubit = loginInjector<LoginCubit>();
+  final LoginCubit loginCubit = authInjector<LoginCubit>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FocusNode passwordNode = FocusNode();
@@ -80,6 +81,26 @@ class _LoginPageState extends State<LoginPage> {
                   onFieldSubmitted: (_) {
                     _logIn();
                   },
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ResetPasswordPage(),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    },
+                    child: Text(
+                      "Forgot Password?",
+                      style: TextStyle(
+                        color: PrimaryColor.pureGrey,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 50),
                 BlocBuilder<LoginCubit, LoginState>(

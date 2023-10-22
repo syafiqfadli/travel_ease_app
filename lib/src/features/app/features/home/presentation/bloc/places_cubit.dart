@@ -20,4 +20,8 @@ class PlacesCubit extends Cubit<PlacesState> {
       (places) => emit(PlacesLoaded(places: places)),
     );
   }
+
+  void clearSearch() {
+    emit(const PlacesLoaded(places: []));
+  }
 }

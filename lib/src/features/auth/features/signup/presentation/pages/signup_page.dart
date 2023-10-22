@@ -5,13 +5,12 @@ import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/input_validator.dart';
 import 'package:travel_ease_app/src/core/utils/services.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/pages/app_page.dart';
+import 'package:travel_ease_app/src/features/auth/auth_injector.dart';
 import 'package:travel_ease_app/src/features/auth/core/domain/entities/auth_entity.dart';
 import 'package:travel_ease_app/src/features/auth/core/presentation/widgets/auth_input_field.dart';
-import 'package:travel_ease_app/src/features/auth/features/login/login_injector.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/bloc/login_cubit.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/pages/login_page.dart';
 import 'package:travel_ease_app/src/features/auth/features/signup/presentation/bloc/signup_cubit.dart';
-import 'package:travel_ease_app/src/features/auth/features/signup/signup_injector.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -21,8 +20,8 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final SignUpCubit signUpCubit = signUpInjector<SignUpCubit>();
-  final LoginCubit loginCubit = loginInjector<LoginCubit>();
+  final SignUpCubit signUpCubit = authInjector<SignUpCubit>();
+  final LoginCubit loginCubit = authInjector<LoginCubit>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();

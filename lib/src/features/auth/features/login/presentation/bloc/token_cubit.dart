@@ -13,8 +13,8 @@ class TokenCubit extends Cubit<String?> {
   }
 
   void checkToken() {
-    if (localDataSource.has(LocalKey.logInKey)) {
-      final cacheData = localDataSource.get(LocalKey.logInKey);
+    if (localDataSource.has(LocalKey.tokenKey)) {
+      final cacheData = localDataSource.get(LocalKey.tokenKey);
       final tokenModel = TokenModel.fromJson(cacheData);
 
       emit(tokenModel.token);

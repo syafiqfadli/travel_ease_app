@@ -15,7 +15,7 @@ abstract class ApiDataSource {
     Map<String, String>? headers,
     required Map<String, dynamic> body,
   });
-  Future<Either<Failure, ResponseModel>> put(
+  Future<Either<Failure, ResponseModel>> patch(
     Uri url, {
     Map<String, String>? headers,
     required Map<String, dynamic> body,
@@ -67,13 +67,13 @@ class ApiDataSourceImpl implements ApiDataSource {
   }
 
   @override
-  Future<Either<Failure, ResponseModel>> put(
+  Future<Either<Failure, ResponseModel>> patch(
     Uri url, {
     Map<String, String>? headers,
     required Map<String, dynamic> body,
   }) async {
     try {
-      final rawResponse = await http.put(
+      final rawResponse = await http.patch(
         url,
         headers: headers,
         body: jsonEncode(body),

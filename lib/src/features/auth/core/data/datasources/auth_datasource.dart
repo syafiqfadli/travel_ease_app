@@ -9,8 +9,9 @@ import 'package:travel_ease_app/src/features/auth/core/domain/entities/auth_enti
 
 abstract class AuthDataSource {
   Future<Either<Failure, TokenModel>> logIn(AuthEntity authEntity);
-  Future<Either<Failure, void>> logOut();
+  Future<Either<Failure, void>> logout();
   Future<Either<Failure, String>> signUp(AuthEntity authEntity);
+  Future<Either<Failure, String>> resetPassword(AuthEntity authEntity);
 }
 
 class AuthDataSourceImpl implements AuthDataSource {
@@ -37,12 +38,12 @@ class AuthDataSourceImpl implements AuthDataSource {
       final response = apiEither.getOrElse(() => ResponseEntity.empty);
 
       if (!response.isSuccess) {
-        await localDataSource.remove(LocalKey.logInKey);
+        await localDataSource.remove(LocalKey.tokenKey);
         return Left(SystemFailure(message: response.message));
       }
 
       final tokenModel = TokenModel.fromJson(response.data);
-      await localDataSource.store(LocalKey.logInKey, response.data);
+      await localDataSource.store(LocalKey.tokenKey, response.data);
 
       return Right(tokenModel);
     } catch (error) {
@@ -72,8 +73,28 @@ class AuthDataSourceImpl implements AuthDataSource {
   }
 
   @override
-  Future<Either<Failure, void>> logOut() async {
-    await localDataSource.remove(LocalKey.logInKey);
+  Future<Either<Failure, void>> logout() async {
+    await localDataSource.remove(LocalKey.tokenKey);
     return const Right(null);
+  }
+
+  @override
+  Future<Either<Failure, String>> resetPassword(AuthEntity authEntity) async {
+    final apiEither = await apiDataSource.patch(
+      Uri.parse(ApiUrl.resetPassword),
+      headers: {'Content-Type': 'application/json'},
+      body: {
+        "email": authEntity.email,
+        "password": authEntity.password,
+      },
+    );
+
+    final response = apiEither.getOrElse(() => ResponseEntity.empty);
+
+    if (!response.isSuccess) {
+      return Left(SystemFailure(message: response.message));
+    }
+
+    return Right(response.message);
   }
 }

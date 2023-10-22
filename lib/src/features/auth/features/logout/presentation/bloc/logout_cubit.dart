@@ -4,12 +4,12 @@ import 'package:travel_ease_app/src/features/auth/core/domain/repositories/auth_
 
 part 'logout_state.dart';
 
-class LogOutCubit extends Cubit<LogoutState> {
+class LogoutCubit extends Cubit<LogoutState> {
   final AuthRepo authRepo;
 
-  LogOutCubit({required this.authRepo}) : super(LogoutInitial());
+  LogoutCubit({required this.authRepo}) : super(LogoutInitial());
 
-  Future<void> logOut() async {
-    await authRepo.logOut();
+  Future<void> logout() async {
+    await authRepo.logout();
   }
 }

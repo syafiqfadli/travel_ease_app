@@ -35,7 +35,7 @@ void appInit() {
     ),
   );
 
-  appInjector.registerLazySingleton<PlacesCubit>(
+  appInjector.registerFactory<PlacesCubit>(
     () => PlacesCubit(homeRepo: appInjector()),
   );
 }

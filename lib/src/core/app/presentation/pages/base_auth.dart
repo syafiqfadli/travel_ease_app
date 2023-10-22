@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
+import 'package:travel_ease_app/src/features/auth/features/login/presentation/pages/login_page.dart';
 
 class BaseAuth extends StatefulWidget {
   final String title;
   final String description;
+  final bool backFromResetPassword;
   final Widget child;
+
   const BaseAuth({
     super.key,
     required this.title,
     required this.description,
+    this.backFromResetPassword = false,
     required this.child,
   });
 
@@ -23,6 +27,18 @@ class _BaseAuthState extends State<BaseAuth> {
 
     return WillPopScope(
       onWillPop: () {
+        if (widget.backFromResetPassword) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
+            ),
+            (Route<dynamic> route) => false,
+          );
+
+          return Future.value(false);
+        }
+
         return Future.value(true);
       },
       child: GestureDetector(

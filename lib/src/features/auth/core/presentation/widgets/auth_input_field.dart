@@ -54,6 +54,8 @@ class _AuthInputFieldState extends State<AuthInputField> {
               ),
               suffixIcon: widget.isObscure!
                   ? IconButton(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
                       icon: Icon(
                         isShow ? Icons.visibility : Icons.visibility_off,
                       ),

@@ -21,12 +21,8 @@ class UserInfoCubit extends Cubit<UserInfoState> {
     final userEither = await appRepo.userInfo(tokenCubit.state!);
 
     userEither.fold(
-      (failure) {
-        emit(UserInfoError(message: failure.message));
-      },
-      (user) {
-        emit(UserInfoLoaded(userEntity: user));
-      },
+      (failure) => emit(UserInfoError(message: failure.message)),
+      (user) => emit(UserInfoLoaded(userEntity: user)),
     );
   }
 }

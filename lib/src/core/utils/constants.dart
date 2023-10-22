@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LocalKey {
-  static String logInKey = "token";
+  static String tokenKey = "token";
 }
 
 class ApiUrl {
@@ -13,6 +13,7 @@ class ApiUrl {
 
   static String logIn = "$_baseUrl/auth/log-in";
   static String signUp = "$_baseUrl/auth/sign-up";
+  static String resetPassword = "$_baseUrl/auth/reset-password";
   static String userInfo = "$_baseUrl/user/info";
   static String placeGoogle = "$_baseUrl/place/google";
 }
@@ -21,6 +22,7 @@ class PrimaryColor {
   static Color navyBlack = const Color(0xff13181F);
   static Color pureGrey = const Color(0xFF7D7D7D);
   static Color pureWhite = const Color(0xffFFFFFF);
+  static Color pureRed = const Color(0xFFFF0000);
+  static Color lightGrey = const Color(0x7B000000);
   static Color backgroundGrey = const Color(0xffFBFBFD);
-  static Color lightGrey = const Color.fromARGB(124, 0, 0, 0);
 }
