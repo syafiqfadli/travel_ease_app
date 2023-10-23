@@ -4,24 +4,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:travel_ease_app/src/core/app/presentation/widgets/input_field.dart';
+import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
-import 'package:travel_ease_app/src/features/app/features/home/presentation/bloc/places_cubit.dart';
-import 'package:travel_ease_app/src/features/app/features/home/presentation/bloc/select_place_cubit.dart';
-import 'package:travel_ease_app/src/features/app/features/home/presentation/widgets/place_card.dart';
-import 'package:travel_ease_app/src/features/app/features/home/presentation/widgets/place_details_card.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/favourite_place_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/marker_list_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/polyline_list_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/search_places_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/select_place_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/place_card.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/place_details_card.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class MapPage extends StatefulWidget {
+  const MapPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MapPage> createState() => _MapPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  final PlacesCubit placesCubit = appInjector<PlacesCubit>();
+class _MapPageState extends State<MapPage> {
+  final SearchPlacesCubit searchPlaceCubit = appInjector<SearchPlacesCubit>();
   final SelectPlaceCubit selectPlaceCubit = SelectPlaceCubit();
+  final FavouritePlaceCubit favouritePlaceCubit =
+      appInjector<FavouritePlaceCubit>();
+  final MarkerListCubit addMarkerCubit = appInjector<MarkerListCubit>();
+  final PolylineListCubit addPolylineCubit = PolylineListCubit();
   final TextEditingController placeController = TextEditingController();
 
   final Completer<GoogleMapController> completerController =
@@ -32,22 +40,45 @@ class _HomePageState extends State<HomePage> {
     zoom: 14.45,
   );
 
+  List<LatLng> routeCoords = [];
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchPlaceCubit.clearSearch();
+    selectPlaceCubit.removePlace();
+    placeController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => placesCubit),
-        BlocProvider(create: (context) => selectPlaceCubit),
+        BlocProvider.value(value: searchPlaceCubit),
+        BlocProvider.value(value: selectPlaceCubit),
+        BlocProvider.value(value: addMarkerCubit),
+        BlocProvider.value(value: addPolylineCubit),
+        BlocProvider.value(value: favouritePlaceCubit),
       ],
       child: Stack(
         children: [
-          GoogleMap(
-            mapType: MapType.normal,
-            initialCameraPosition: _initPosition,
-            onMapCreated: (GoogleMapController controller) {
-              completerController.complete(controller);
+          BlocBuilder<MarkerListCubit, List<Marker>>(
+            builder: (context, markers) {
+              return BlocBuilder<PolylineListCubit, List<Polyline>>(
+                builder: (context, polylines) {
+                  return GoogleMap(
+                    mapType: MapType.normal,
+                    initialCameraPosition: _initPosition,
+                    markers: Set.from(markers),
+                    polylines: Set.from(polylines),
+                    onMapCreated: (GoogleMapController controller) {
+                      completerController.complete(controller);
+                    },
+                  );
+                },
+              );
             },
           ),
           Padding(
@@ -62,17 +93,12 @@ class _HomePageState extends State<HomePage> {
                     icon: const Icon(Icons.search),
                   ),
                   hasBorder: true,
-                  onChanged: (value) {
-                    if (value == '') {
-                      placesCubit.clearSearch();
-                    }
-                  },
                   onFieldSubmitted: (_) => _searchPlace(),
                 ),
                 const SizedBox(height: 5),
-                BlocBuilder<PlacesCubit, PlacesState>(
+                BlocBuilder<SearchPlacesCubit, SearchPlacesState>(
                   builder: (context, state) {
-                    if (state is PlacesLoaded) {
+                    if (state is SearchPlacesLoaded) {
                       final places = state.places;
 
                       if (places.isEmpty) {
@@ -100,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                       );
                     }
 
-                    if (state is PlacesLoading) {
+                    if (state is SearchPlacesLoading) {
                       return Container(
                         height: 100,
                         width: width,
@@ -109,9 +135,7 @@ class _HomePageState extends State<HomePage> {
                               const BorderRadius.all(Radius.circular(10)),
                           color: PrimaryColor.pureWhite,
                         ),
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        child: const CustomLoading(),
                       );
                     }
 
@@ -145,6 +169,6 @@ class _HomePageState extends State<HomePage> {
   void _searchPlace() {
     final String query = placeController.text;
 
-    placesCubit.searchPlaces(query);
+    searchPlaceCubit.searchPlaces(query);
   }
 }

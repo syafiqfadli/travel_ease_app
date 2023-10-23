@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_ease_app/src/core/app/presentation/pages/base_auth.dart';
+import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/input_validator.dart';
 import 'package:travel_ease_app/src/core/utils/services.dart';
@@ -42,7 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
       child: MultiBlocListener(
         listeners: [
           BlocListener<SignUpCubit, SignUpState>(
-            listener: (context, state) {
+            listener: (context, state) async {
               if (state is SignUpError) {
                 DialogService.showMessage(
                   title: "Error",
@@ -50,6 +51,17 @@ class _SignUpPageState extends State<SignUpPage> {
                   message: state.message,
                   context: context,
                 );
+              }
+
+              if (state is SignUpSuccessful) {
+                await DialogService.showMessage(
+                  title: "Successful",
+                  icon: Icons.check,
+                  message: state.message,
+                  context: context,
+                );
+
+                _logIn();
               }
             },
           ),
@@ -66,101 +78,112 @@ class _SignUpPageState extends State<SignUpPage> {
             },
           ),
         ],
-        child: BaseAuth(
-          title: "Hi! Welcome",
-          description: "Let's create an account",
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                AuthInputField(
-                  hint: "Name",
-                  icon: Icons.person,
-                  textController: nameController,
-                  validate: validator.nameValidation,
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(emailNode);
-                  },
-                ),
-                AuthInputField(
-                  hint: "Email",
-                  icon: Icons.email,
-                  textController: emailController,
-                  validate: validator.emailValidation,
-                  focusNode: emailNode,
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(passwordNode);
-                  },
-                ),
-                AuthInputField(
-                  hint: "Password",
-                  icon: Icons.password,
-                  textController: passwordController,
-                  isObscure: true,
-                  validate: validator.createPasswordValidation,
-                  focusNode: passwordNode,
-                  onFieldSubmitted: (_) {
-                    _signUp();
-                  },
-                ),
-                const SizedBox(height: 50),
-                BlocBuilder<SignUpCubit, SignUpState>(
-                  builder: (context, state) {
-                    if (state is SignUpLoading) {
-                      return const CircularProgressIndicator();
-                    }
+        child: BlocBuilder<LoginCubit, LoginState>(
+          builder: (context, state) {
+            if (state is LoginLoading) {
+              return const Scaffold(
+                body: CustomLoading(),
+              );
+            }
 
-                    return ElevatedButton(
-                      onPressed: _signUp,
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: Size(width, 50),
-                        backgroundColor: PrimaryColor.navyBlack,
-                      ),
-                      child: const Text(
-                        "Sign Up",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    );
-                  },
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            return BaseAuth(
+              title: "Hi! Welcome",
+              description: "Let's create an account",
+              backToLogin: true,
+              child: Form(
+                key: formKey,
+                child: Column(
                   children: [
-                    Text(
-                      "Have an account?",
-                      style: TextStyle(color: PrimaryColor.pureGrey),
+                    AuthInputField(
+                      hint: "Name",
+                      icon: Icons.person,
+                      textController: nameController,
+                      validate: validator.nameValidation,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(emailNode);
+                      },
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
+                    AuthInputField(
+                      hint: "Email",
+                      icon: Icons.email,
+                      textController: emailController,
+                      validate: validator.emailValidation,
+                      focusNode: emailNode,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(passwordNode);
+                      },
+                    ),
+                    AuthInputField(
+                      hint: "Password",
+                      icon: Icons.password,
+                      textController: passwordController,
+                      isObscure: true,
+                      validate: validator.createPasswordValidation,
+                      focusNode: passwordNode,
+                      onFieldSubmitted: (_) {
+                        _signUp();
+                      },
+                    ),
+                    const SizedBox(height: 50),
+                    BlocBuilder<SignUpCubit, SignUpState>(
+                      builder: (context, state) {
+                        if (state is SignUpLoading) {
+                          return const CustomLoading();
+                        }
+
+                        return ElevatedButton(
+                          onPressed: _signUp,
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: Size(width, 50),
+                            backgroundColor: PrimaryColor.navyBlack,
                           ),
-                          (Route<dynamic> route) => false,
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(fontSize: 20),
+                          ),
                         );
                       },
-                      child: Text(
-                        "Log In",
-                        style: TextStyle(
-                          color: PrimaryColor.navyBlack,
-                          fontWeight: FontWeight.bold,
+                    ),
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Have an account?",
+                          style: TextStyle(color: PrimaryColor.pureGrey),
                         ),
-                      ),
-                    )
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginPage(),
+                              ),
+                              (Route<dynamic> route) => false,
+                            );
+                          },
+                          child: Text(
+                            "Log In",
+                            style: TextStyle(
+                              color: PrimaryColor.navyBlack,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 50)
                   ],
                 ),
-                const SizedBox(height: 50)
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Future<void> _signUp() async {
+  void _signUp() {
     if (!formKey.currentState!.validate()) {
       return;
     }
@@ -177,7 +200,18 @@ class _SignUpPageState extends State<SignUpPage> {
       displayName: name,
     );
 
-    await signUpCubit.signUp(authEntity);
-    await loginCubit.logIn(authEntity);
+    signUpCubit.signUp(authEntity);
+  }
+
+  void _logIn() {
+    final String email = emailController.text;
+    final String password = passwordController.text;
+
+    final authEntity = AuthEntity(
+      email: email,
+      password: password,
+    );
+
+    loginCubit.logIn(authEntity);
   }
 }

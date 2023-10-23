@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 part 'set_page_state.dart';
 
 class SetPageCubit extends Cubit<SetPageState> {
-  SetPageCubit() : super(const SelectedPage(title: "Home", index: 1));
+  SetPageCubit() : super(const SelectedPage(title: "Attractions", index: 0));
 
   void setPage(int selectedPage) async {
     if (selectedPage == 0) {
@@ -13,7 +13,7 @@ class SetPageCubit extends Cubit<SetPageState> {
     }
 
     if (selectedPage == 1) {
-      emit(SelectedPage(title: "Home", index: selectedPage));
+      emit(SelectedPage(title: "Map", index: selectedPage));
       return;
     }
 

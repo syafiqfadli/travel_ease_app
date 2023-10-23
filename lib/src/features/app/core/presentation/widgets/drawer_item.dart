@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
-import 'package:travel_ease_app/src/features/app/core/presentation/bloc/cubit/user_info_cubit.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/bloc/user_info_cubit.dart';
 
 class DrawerItem extends StatelessWidget {
   final double safePadding;

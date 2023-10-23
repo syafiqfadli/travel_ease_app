@@ -8,4 +8,11 @@ class PriceEntity extends Equatable {
 
   @override
   List<Object?> get props => [category, price];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'category': category,
+      'price': price,
+    };
+  }
 }

@@ -8,14 +8,24 @@ class PlaceModel extends PlaceEntity {
     required super.placeName,
     required super.prices,
     required super.location,
+    required super.address,
+    required super.phoneNo,
+    required super.isFavourite,
+    required super.hasMarker,
   });
 
   factory PlaceModel.fromJson(Map<String, dynamic> parseJson) {
     return PlaceModel(
       placeId: parseJson['place_id'] ?? parseJson['placeId'],
       placeName: parseJson['name'] ?? parseJson['placeName'],
-      prices: PriceModel.fromList(parseJson['prices'] ?? []),
+      prices: parseJson['prices'] != null
+          ? PriceModel.fromList(parseJson['prices'])
+          : [],
       location: LocationModel.fromJson(parseJson),
+      isFavourite: parseJson['isFavourite'] ?? false,
+      hasMarker: parseJson['hasMarker'] ?? false,
+      address: parseJson['formatted_address'] ?? 'NO_ADDRESS',
+      phoneNo: parseJson['formatted_phone_number'] ?? 'NO_PHONE_NO',
     );
   }
 

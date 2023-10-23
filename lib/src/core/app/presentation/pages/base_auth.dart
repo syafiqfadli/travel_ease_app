@@ -5,14 +5,14 @@ import 'package:travel_ease_app/src/features/auth/features/login/presentation/pa
 class BaseAuth extends StatefulWidget {
   final String title;
   final String description;
-  final bool backFromResetPassword;
+  final bool backToLogin;
   final Widget child;
 
   const BaseAuth({
     super.key,
     required this.title,
     required this.description,
-    this.backFromResetPassword = false,
+    this.backToLogin = false,
     required this.child,
   });
 
@@ -27,16 +27,8 @@ class _BaseAuthState extends State<BaseAuth> {
 
     return WillPopScope(
       onWillPop: () {
-        if (widget.backFromResetPassword) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const LoginPage(),
-            ),
-            (Route<dynamic> route) => false,
-          );
-
-          return Future.value(false);
+        if (widget.backToLogin) {
+          _navigateToLoginPage();
         }
 
         return Future.value(true);
@@ -81,6 +73,16 @@ class _BaseAuthState extends State<BaseAuth> {
           ),
         ),
       ),
+    );
+  }
+
+  void _navigateToLoginPage() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginPage(),
+      ),
+      (Route<dynamic> route) => false,
     );
   }
 }

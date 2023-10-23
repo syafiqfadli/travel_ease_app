@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
-import 'package:travel_ease_app/src/features/app/core/presentation/bloc/cubit/set_page_cubit.dart';
-import 'package:travel_ease_app/src/features/app/core/presentation/bloc/cubit/user_info_cubit.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/bloc/set_page_cubit.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/bloc/user_info_cubit.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/widgets/drawer_item.dart';
-import 'package:travel_ease_app/src/features/app/features/home/presentation/pages/home_page.dart';
+import 'package:travel_ease_app/src/features/app/features/attraction/presentation/pages/attraction_page.dart';
+import 'package:travel_ease_app/src/features/app/features/favourite/presentation/pages/favourite_page.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/pages/map_page.dart';
 import 'package:travel_ease_app/src/features/auth/auth_injector.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/pages/login_page.dart';
 import 'package:travel_ease_app/src/features/auth/features/logout/presentation/bloc/logout_cubit.dart';
@@ -23,9 +25,9 @@ class _AppPageState extends State<AppPage> {
   final LogoutCubit logOutCubit = authInjector<LogoutCubit>();
 
   final List<Widget> pages = [
-    const Scaffold(),
-    const HomePage(),
-    const Scaffold(),
+    const AttractionPage(),
+    const MapPage(),
+    const FavouritePage(),
   ];
 
   @override
@@ -105,9 +107,9 @@ class _AppPageState extends State<AppPage> {
                           label: "ATTRACTIONS",
                         ),
                         BottomNavigationBarItem(
-                          icon: Icon(Icons.home_outlined),
-                          activeIcon: Icon(Icons.home),
-                          label: "HOME",
+                          icon: Icon(Icons.map_outlined),
+                          activeIcon: Icon(Icons.map_rounded),
+                          label: "MAP",
                         ),
                         BottomNavigationBarItem(
                           icon: Icon(Icons.favorite_outline),

@@ -8,4 +8,11 @@ class LocationEntity extends Equatable {
 
   @override
   List<Object?> get props => [longitude, latitude];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'longitude': longitude,
+      'latitude': latitude,
+    };
+  }
 }

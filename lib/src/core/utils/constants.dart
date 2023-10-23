@@ -3,6 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LocalKey {
   static String tokenKey = "token";
+  static String placeDetailsListKey = "placeDetailsList";
+  static String favPlace = "favPlace";
 }
 
 class ApiUrl {
@@ -15,7 +17,9 @@ class ApiUrl {
   static String signUp = "$_baseUrl/auth/sign-up";
   static String resetPassword = "$_baseUrl/auth/reset-password";
   static String userInfo = "$_baseUrl/user/info";
-  static String placeGoogle = "$_baseUrl/place/google";
+  static String placeGoogleText = "$_baseUrl/place/google-text";
+  static String placeGoogleNearby = "$_baseUrl/place/google-nearby";
+  static String placeGoogleDetails = "$_baseUrl/place/google-details";
 }
 
 class PrimaryColor {

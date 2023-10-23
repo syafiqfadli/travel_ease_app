@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_ease_app/src/core/app/presentation/pages/base_auth.dart';
+import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/input_validator.dart';
 import 'package:travel_ease_app/src/core/utils/services.dart';
@@ -106,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                 BlocBuilder<LoginCubit, LoginState>(
                   builder: (context, state) {
                     if (state is LoginLoading) {
-                      return const CircularProgressIndicator();
+                      return const CustomLoading();
                     }
 
                     return ElevatedButton(

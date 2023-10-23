@@ -5,10 +5,11 @@ class LocationModel extends LocationEntity {
 
   factory LocationModel.fromJson(Map<String, dynamic> parseJson) {
     return LocationModel(
-      longitude: parseJson['geometry']['location']['lng'] ??
-          parseJson['location']['longitude'],
-      latitude: parseJson['geometry']['location']['lat'] ??
-          parseJson['location']['latitude'],
-    );
+        longitude: parseJson['geometry'] != null
+            ? parseJson['geometry']['location']['lng']
+            : parseJson['location']['longitude'],
+        latitude: parseJson['geometry'] != null
+            ? parseJson['geometry']['location']['lat']
+            : parseJson['location']['latitude']);
   }
 }
