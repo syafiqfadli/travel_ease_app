@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
-import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/favourite_place_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/marker_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/select_place_cubit.dart';
 
@@ -59,18 +58,18 @@ class _PlaceDetailsCardState extends State<PlaceDetailsCard> {
                 ),
                 Row(
                   children: [
-                    IconButton(
-                      onPressed: _favouritePlace,
-                      icon: BlocBuilder<FavouritePlaceCubit, bool>(
-                        builder: (context, isFavourite) {
-                          return Icon(
-                            isFavourite
+                    BlocBuilder<SelectPlaceCubit, PlaceEntity?>(
+                      builder: (context, state) {
+                        return IconButton(
+                          onPressed: () => _favouritePlace(state),
+                          icon: Icon(
+                            state!.isFavourite
                                 ? Icons.favorite_rounded
                                 : Icons.favorite_outline,
                             color: PrimaryColor.pureRed,
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                     IconButton(
                       onPressed: () {
@@ -151,19 +150,8 @@ class _PlaceDetailsCardState extends State<PlaceDetailsCard> {
     );
   }
 
-  void _favouritePlace() {
-    final PlaceEntity place = PlaceEntity(
-      placeId: widget.place.placeId,
-      placeName: widget.place.placeName,
-      prices: widget.place.prices,
-      location: widget.place.location,
-      isFavourite: true,
-      hasMarker: false,
-      address: widget.place.address,
-      phoneNo: widget.place.phoneNo,
-    );
-
-    context.read<FavouritePlaceCubit>().favouritePlace(place);
+  void _favouritePlace(PlaceEntity place) {
+    context.read<SelectPlaceCubit>().setFavouritePlace(place);
   }
 
   void _addPlaceMarker() {

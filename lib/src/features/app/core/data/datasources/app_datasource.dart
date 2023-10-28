@@ -14,14 +14,24 @@ import 'package:travel_ease_app/src/features/auth/core/data/datasources/auth_dat
 
 abstract class AppDataSource {
   Future<Either<Failure, UserModel>> userInfo(String token);
-  Future<Either<Failure, List<PlaceModel>>> searchPlaces(String query);
-  Future<Either<Failure, List<PlaceModel>>> searchNearby(
-    LocationEntity locationEntity,
+  Future<Either<Failure, List<PlaceModel>>> searchGoogleNearby({
+    String? placeName,
+    String? type,
+    required bool isAttraction,
+    required LocationEntity locationEntity,
+  });
+  Future<Either<Failure, PlaceModel>> getGooglePlace(String placeId);
+  Future<Either<Failure, List<PlaceModel>>> getPlaceListCache({
+    required String key,
+    String? placeName,
+    LocationEntity? location,
+  });
+  Future<void> setFavouriteCache(
+    String email,
+    PlaceEntity placeEntity,
+    bool isFavourite,
   );
-  Future<Either<Failure, PlaceModel>> placeDetails(String placeId);
-  Future<Either<Failure, List<PlaceModel>>> getPlacesFromStorage();
-  Future<void> favouritePlace(PlaceEntity placeEntity, bool isFavourite);
-  Future<Either<Failure, List<PlaceModel>>> getFavouritePlace();
+  Future<Either<Failure, List<PlaceModel>>> getFavouriteListCache(String email);
 }
 
 class AppDataSourceImpl implements AppDataSource {
@@ -37,6 +47,8 @@ class AppDataSourceImpl implements AppDataSource {
 
   @override
   Future<Either<Failure, UserModel>> userInfo(String token) async {
+    localDataSource.remove(LocalKey.attractionKey);
+
     final apiEither = await apiDataSource.get(
       Uri.parse(ApiUrl.userInfo),
       headers: {
@@ -53,10 +65,12 @@ class AppDataSourceImpl implements AppDataSource {
       return Left(SystemFailure(message: response.message));
     }
 
-    if (!localDataSource.has(LocalKey.placeDetailsListKey) &&
-        !localDataSource.has(LocalKey.favPlace)) {
-      await localDataSource.store(LocalKey.placeDetailsListKey, jsonEncode([]));
-      await localDataSource.store(LocalKey.favPlace, jsonEncode([]));
+    if (!localDataSource.has(LocalKey.nearbyKey)) {
+      await localDataSource.store(LocalKey.nearbyKey, jsonEncode([]));
+    }
+
+    if (!localDataSource.has(LocalKey.userKey)) {
+      await localDataSource.store(LocalKey.userKey, jsonEncode([]));
     }
 
     final userModel = UserModel.fromJson(response.data);
@@ -65,9 +79,16 @@ class AppDataSourceImpl implements AppDataSource {
   }
 
   @override
-  Future<Either<Failure, List<PlaceModel>>> searchPlaces(String query) async {
+  Future<Either<Failure, List<PlaceModel>>> searchGoogleNearby({
+    String? placeName,
+    String? type,
+    required bool isAttraction,
+    required LocationEntity locationEntity,
+  }) async {
     final apiEither = await apiDataSource.get(
-      Uri.parse('${ApiUrl.placeGoogleText}?query=$query'),
+      Uri.parse(
+        '${ApiUrl.placeGoogleNearby}?latitude=${locationEntity.latitude}&longitude=${locationEntity.longitude}&type=$type',
+      ),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -79,38 +100,24 @@ class AppDataSourceImpl implements AppDataSource {
       return Left(SystemFailure(message: response.message));
     }
 
-    final placesModel = PlaceModel.fromList(response.data['results']);
+    if (isAttraction) {
+      final places = await storeAttractionListCache(
+        placeName!,
+        (response.data['results'] as List).take(5).toList(),
+      );
+
+      return Right(places);
+    }
+
+    final placesModel = PlaceModel.fromList(
+      (response.data['results'] as List).take(3).toList(),
+    );
 
     return Right(placesModel);
   }
 
   @override
-  Future<Either<Failure, List<PlaceModel>>> searchNearby(
-    LocationEntity locationEntity,
-  ) async {
-    final apiEither = await apiDataSource.get(
-      Uri.parse(
-          '${ApiUrl.placeGoogleNearby}?latitude=${locationEntity.latitude}&longitude=${locationEntity.longitude}'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-
-    final response = apiEither.getOrElse(() => ResponseEntity.empty);
-
-    if (!response.isSuccess) {
-      return Left(SystemFailure(message: response.message));
-    }
-
-    final placesModel = PlaceModel.fromList(response.data['results']);
-
-    final filteredList = placesModel.take(3).toList();
-
-    return Right(filteredList);
-  }
-
-  @override
-  Future<Either<Failure, PlaceModel>> placeDetails(String placeId) async {
+  Future<Either<Failure, PlaceModel>> getGooglePlace(String placeId) async {
     final apiEither = await apiDataSource.get(
       Uri.parse('${ApiUrl.placeGoogleDetails}?placeId=$placeId'),
       headers: {
@@ -124,7 +131,7 @@ class AppDataSourceImpl implements AppDataSource {
       return Left(SystemFailure(message: response.message));
     }
 
-    await addPlaceToStorage(response.data['result']);
+    await addNearbyCache(response.data['result']);
 
     final placeModel = PlaceModel.fromJson(response.data['result']);
 
@@ -132,84 +139,154 @@ class AppDataSourceImpl implements AppDataSource {
   }
 
   @override
-  Future<Either<Failure, List<PlaceModel>>> getPlacesFromStorage() async {
-    if (!localDataSource.has(LocalKey.placeDetailsListKey)) {
-      return const Left(ServerFailure(message: "No list"));
+  Future<Either<Failure, List<PlaceModel>>> getPlaceListCache({
+    required String key,
+    String? placeName,
+    LocationEntity? location,
+  }) async {
+    final cacheList = await getCacheList(key);
+
+    if (key == LocalKey.attractionKey) {
+      final placeIndex = cacheList.indexWhere(
+        (element) => element['placeName'] == placeName,
+      );
+
+      if (placeIndex == -1) {
+        return const Right([]);
+      }
+
+      final placeList = PlaceModel.fromList(cacheList[placeIndex]['places']);
+
+      return Right(placeList);
     }
 
-    final cacheList = await localDataSource.get(LocalKey.placeDetailsListKey);
-    List<dynamic> cacheJson = jsonDecode(cacheList);
-
-    final placeList = PlaceModel.fromList(cacheJson);
+    final placeList = PlaceModel.fromList(cacheList);
 
     return Right(placeList);
   }
 
+  Future<List<dynamic>> getCacheList(String localKey) async {
+    if (!localDataSource.has(localKey)) {
+      await localDataSource.store(localKey, jsonEncode([]));
+    }
+
+    final cacheData = await localDataSource.get(localKey);
+    List<dynamic> cacheList = jsonDecode(cacheData);
+
+    return cacheList;
+  }
+
   @override
-  Future<void> favouritePlace(PlaceEntity placeEntity, bool isFavourite) async {
-    final cacheList = await getCacheList(LocalKey.favPlace);
+  Future<void> setFavouriteCache(
+    String email,
+    PlaceEntity placeEntity,
+    bool isFavourite,
+  ) async {
+    final cacheList = await getCacheList(LocalKey.userKey);
+
+    final emailIndex = cacheList.indexWhere(
+      (element) => element['email'] == email,
+    );
 
     if (isFavourite) {
       final jsonPlace = placeEntity.toJson();
 
-      cacheList.add(jsonPlace);
+      if (emailIndex != -1) {
+        cacheList[emailIndex]['places'] = [
+          ...cacheList[emailIndex]['places'],
+          jsonPlace,
+        ];
+      } else {
+        final jsonData = {
+          "email": email,
+          "places": [jsonPlace],
+        };
 
-      return await localDataSource.store(
-        LocalKey.favPlace,
-        jsonEncode(cacheList),
-      );
-    }
-
-    final places = PlaceModel.fromList(cacheList);
-
-    for (var data in places) {
-      if (data.placeId == placeEntity.placeId) {
-        final placeIndex = places.indexWhere(
-          (element) => element.placeId == placeEntity.placeId,
-        );
-
-        places.removeAt(placeIndex);
-
-        return await localDataSource.store(
-          LocalKey.favPlace,
-          jsonEncode(places),
-        );
+        cacheList.add(jsonData);
       }
     }
-  }
 
-  @override
-  Future<Either<Failure, List<PlaceModel>>> getFavouritePlace() async {
-    try {
-      if (!localDataSource.has(LocalKey.favPlace)) {
-        return const Left(ServerFailure(message: "No list"));
+    if (!isFavourite && emailIndex != -1) {
+      final places = PlaceModel.fromList(cacheList[emailIndex]['places']);
+
+      for (var data in places) {
+        if (data.placeId == placeEntity.placeId) {
+          final placeIndex = places.indexWhere(
+            (element) => element.placeId == placeEntity.placeId,
+          );
+
+          places.removeAt(placeIndex);
+          break;
+        }
       }
 
-      final cacheList = await getCacheList(LocalKey.favPlace);
-
-      final placeList = PlaceModel.fromList(cacheList);
-
-      return Right(placeList);
-    } catch (error) {
-      return Left(ServerFailure(message: error.toString()));
+      cacheList[emailIndex]['places'] = places;
     }
-  }
-
-  Future<void> addPlaceToStorage(Map<String, dynamic> data) async {
-    final cacheList = await getCacheList(LocalKey.placeDetailsListKey);
-
-    cacheList.add(data);
 
     await localDataSource.store(
-      LocalKey.placeDetailsListKey,
+      LocalKey.userKey,
       jsonEncode(cacheList),
     );
   }
 
-  Future<List<dynamic>> getCacheList(String localKey) async {
-    final cacheList = await localDataSource.get(localKey);
-    List<dynamic> cacheJson = jsonDecode(cacheList);
+  @override
+  Future<Either<Failure, List<PlaceModel>>> getFavouriteListCache(
+    String email,
+  ) async {
+    final cacheList = await getCacheList(LocalKey.userKey);
 
-    return cacheJson;
+    for (var data in cacheList) {
+      if (data['email'] == email) {
+        final placeList = PlaceModel.fromList(data['places']);
+
+        return Right(placeList);
+      }
+    }
+
+    return const Right([]);
+  }
+
+  Future<List<PlaceModel>> storeAttractionListCache(
+    String placeName,
+    List<dynamic> dataList,
+  ) async {
+    List<dynamic> cacheList = await getCacheList(LocalKey.attractionKey);
+
+    final placeIndex = cacheList.indexWhere(
+      (element) => element['placeName'] == placeName,
+    );
+
+    if (placeIndex != -1) {
+      cacheList[placeIndex]['places'] = [
+        ...cacheList[placeIndex]['places'],
+        ...dataList,
+      ];
+    } else {
+      cacheList.add({"placeName": placeName, "places": dataList});
+    }
+
+    await localDataSource.store(
+      LocalKey.attractionKey,
+      jsonEncode(cacheList),
+    );
+
+    if (placeIndex == -1) {
+      return [];
+    }
+
+    final placesModel = PlaceModel.fromList(cacheList[placeIndex]['places']);
+
+    return placesModel;
+  }
+
+  Future<void> addNearbyCache(Map<String, dynamic> data) async {
+    final cacheList = await getCacheList(LocalKey.nearbyKey);
+
+    cacheList.add(data);
+
+    await localDataSource.store(
+      LocalKey.nearbyKey,
+      jsonEncode(cacheList),
+    );
   }
 }

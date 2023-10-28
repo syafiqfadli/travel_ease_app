@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 
-class LoadingResult extends StatelessWidget {
+class LoadingStatus extends StatelessWidget {
   final String status;
 
-  const LoadingResult({super.key, required this.status});
+  const LoadingStatus({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {

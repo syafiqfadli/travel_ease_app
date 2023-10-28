@@ -12,6 +12,7 @@ class PlaceModel extends PlaceEntity {
     required super.phoneNo,
     required super.isFavourite,
     required super.hasMarker,
+    required super.businessHours,
   });
 
   factory PlaceModel.fromJson(Map<String, dynamic> parseJson) {
@@ -24,8 +25,11 @@ class PlaceModel extends PlaceEntity {
       location: LocationModel.fromJson(parseJson),
       isFavourite: parseJson['isFavourite'] ?? false,
       hasMarker: parseJson['hasMarker'] ?? false,
+      businessHours: parseJson['current_opening_hours'] != null
+          ? businessList(parseJson['current_opening_hours']['weekday_text'])
+          : [],
       address: parseJson['formatted_address'] ?? 'NO_ADDRESS',
-      phoneNo: parseJson['formatted_phone_number'] ?? 'NO_PHONE_NO',
+      phoneNo: parseJson['formatted_phone_number'] ?? 'NO_PHONE',
     );
   }
 
@@ -34,6 +38,16 @@ class PlaceModel extends PlaceEntity {
 
     for (var data in parseJson) {
       result.add(PlaceModel.fromJson(data));
+    }
+
+    return result;
+  }
+
+  static List<String> businessList(List<dynamic> parseJson) {
+    List<String> result = [];
+
+    for (var data in parseJson) {
+      result.add(data);
     }
 
     return result;

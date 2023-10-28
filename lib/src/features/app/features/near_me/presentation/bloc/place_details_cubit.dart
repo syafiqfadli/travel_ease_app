@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/repositories/app_repo.dart';
 
@@ -13,7 +14,8 @@ class PlaceDetailsCubit extends Cubit<PlaceDetailsState> {
   void getPlaceDetails(String placeId) async {
     emit(PlaceDetailsLoading());
 
-    final placesEither = await appRepo.getPlacesFromStorage();
+    final placesEither =
+        await appRepo.getPlaceListCache(key: LocalKey.nearbyKey);
 
     final places = placesEither.getOrElse(() => []);
 
@@ -26,7 +28,7 @@ class PlaceDetailsCubit extends Cubit<PlaceDetailsState> {
       }
     }
 
-    final placeEither = await appRepo.placeDetails(placeId);
+    final placeEither = await appRepo.getGooglePlace(placeId);
 
     placeEither.fold(
       (failure) => emit(PlaceDetailsError(message: failure.message)),

@@ -74,7 +74,7 @@ class AuthDataSourceImpl implements AuthDataSource {
 
   @override
   Future<Either<Failure, void>> logout() async {
-    await localDataSource.reset();
+    await localDataSource.remove(LocalKey.tokenKey);
     return const Right(null);
   }
 

@@ -3,8 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LocalKey {
   static String tokenKey = "token";
-  static String placeDetailsListKey = "placeDetailsList";
-  static String favPlace = "favPlace";
+  static String nearbyKey = "nearby";
+  static String attractionKey = "attraction";
+  static String userKey = "user";
 }
 
 class ApiUrl {

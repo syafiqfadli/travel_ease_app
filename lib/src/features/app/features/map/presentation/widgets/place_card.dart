@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
-import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/favourite_place_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/select_place_cubit.dart';
 
 class PlaceCard extends StatelessWidget {
@@ -16,7 +15,6 @@ class PlaceCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           context.read<SelectPlaceCubit>().placeSelected(place);
-          context.read<FavouritePlaceCubit>().getFavouritePlace(place.placeId);
         },
         child: Card(
           child: Padding(

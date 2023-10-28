@@ -5,9 +5,10 @@ import 'package:travel_ease_app/src/features/app/app_injector.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/set_page_cubit.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/user_info_cubit.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/widgets/drawer_item.dart';
-import 'package:travel_ease_app/src/features/app/features/attraction/presentation/pages/attraction_page.dart';
+import 'package:travel_ease_app/src/features/app/features/attractions/presentation/pages/attractions_page.dart';
 import 'package:travel_ease_app/src/features/app/features/favourite/presentation/pages/favourite_page.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/pages/map_page.dart';
+import 'package:travel_ease_app/src/features/app/features/near_me/presentation/pages/near_me_page.dart';
 import 'package:travel_ease_app/src/features/auth/auth_injector.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/pages/login_page.dart';
 import 'package:travel_ease_app/src/features/auth/features/logout/presentation/bloc/logout_cubit.dart';
@@ -25,7 +26,8 @@ class _AppPageState extends State<AppPage> {
   final LogoutCubit logOutCubit = authInjector<LogoutCubit>();
 
   final List<Widget> pages = [
-    const AttractionPage(),
+    const NearMePage(),
+    const AtractionsPage(),
     const MapPage(),
     const FavouritePage(),
   ];
@@ -72,7 +74,7 @@ class _AppPageState extends State<AppPage> {
                         highlightColor: Colors.transparent,
                         icon: const Icon(Icons.search),
                         onPressed: () {
-                          setPageCubit.setPage(1);
+                          setPageCubit.setPage(2);
                         },
                       )
                     ],
@@ -83,41 +85,41 @@ class _AppPageState extends State<AppPage> {
                       onLogout: _logout,
                     ),
                   ),
-                  bottomNavigationBar: Theme(
-                    data: Theme.of(context).copyWith(
-                      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-                        backgroundColor: PrimaryColor.navyBlack,
-                        selectedItemColor: PrimaryColor.pureWhite,
-                        unselectedItemColor: PrimaryColor.pureWhite,
-                        selectedLabelStyle: TextStyle(
-                          color: PrimaryColor.pureWhite,
-                        ),
-                        showUnselectedLabels: false,
+                  bottomNavigationBar: BottomNavigationBar(
+                    type: BottomNavigationBarType.fixed,
+                    backgroundColor: PrimaryColor.navyBlack,
+                    selectedItemColor: PrimaryColor.pureWhite,
+                    unselectedItemColor: PrimaryColor.pureWhite,
+                    selectedLabelStyle: TextStyle(
+                      color: PrimaryColor.pureWhite,
+                    ),
+                    showUnselectedLabels: false,
+                    currentIndex: selectedPage.index,
+                    onTap: (index) {
+                      setPageCubit.setPage(index);
+                    },
+                    items: const [
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.room_outlined),
+                        activeIcon: Icon(Icons.room),
+                        label: "NEAR ME",
                       ),
-                    ),
-                    child: BottomNavigationBar(
-                      currentIndex: selectedPage.index,
-                      onTap: (index) {
-                        setPageCubit.setPage(index);
-                      },
-                      items: const [
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.room_outlined),
-                          activeIcon: Icon(Icons.room),
-                          label: "ATTRACTIONS",
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.map_outlined),
-                          activeIcon: Icon(Icons.map_rounded),
-                          label: "MAP",
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.favorite_outline),
-                          activeIcon: Icon(Icons.favorite_rounded),
-                          label: "FAVOURITE",
-                        ),
-                      ],
-                    ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.domain),
+                        activeIcon: Icon(Icons.domain_outlined),
+                        label: "ATTRACTIONS",
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.map_outlined),
+                        activeIcon: Icon(Icons.map_rounded),
+                        label: "MAP",
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.favorite_outline),
+                        activeIcon: Icon(Icons.favorite_rounded),
+                        label: "FAVOURITE",
+                      ),
+                    ],
                   ),
                   body: pages[selectedPage.index],
                 );

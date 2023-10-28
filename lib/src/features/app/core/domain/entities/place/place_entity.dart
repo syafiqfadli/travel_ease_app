@@ -7,6 +7,7 @@ class PlaceEntity extends Equatable {
   final String placeName;
   final List<PriceEntity> prices;
   final LocationEntity location;
+  final List<String> businessHours;
   final bool isFavourite;
   final bool hasMarker;
   final String address;
@@ -19,6 +20,7 @@ class PlaceEntity extends Equatable {
     required this.location,
     required this.isFavourite,
     required this.hasMarker,
+    required this.businessHours,
     required this.address,
     required this.phoneNo,
   });
@@ -31,6 +33,7 @@ class PlaceEntity extends Equatable {
         location,
         isFavourite,
         hasMarker,
+        businessHours,
         address,
         phoneNo,
       ];
@@ -43,6 +46,7 @@ class PlaceEntity extends Equatable {
       'location': location.toJson(),
       'isFavourite': isFavourite,
       'hasMarker': hasMarker,
+      'businessHours': businessHours.map((data) => data).toList(),
       'address': address,
       'phoneNo': phoneNo,
     };

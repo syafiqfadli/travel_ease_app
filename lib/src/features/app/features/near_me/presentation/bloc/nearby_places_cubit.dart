@@ -24,11 +24,17 @@ class NearbyPlacesCubit extends Cubit<NearbyPlacesState> {
       latitude: location.latitude,
     );
 
-    final placesEither = await appRepo.searchNearby(locationEntity);
+    final placesEither = await appRepo.searchGoogleNearby(
+      type: 'tourist_attraction',
+      isAttraction: false,
+      locationEntity: locationEntity,
+    );
 
     placesEither.fold(
       (failure) => emit(NearbyPlacesError(message: failure.message)),
-      (places) => emit(NearbyPlacesLoaded(places: places)),
+      (places) {
+        emit(NearbyPlacesLoaded(places: places));
+      },
     );
   }
 

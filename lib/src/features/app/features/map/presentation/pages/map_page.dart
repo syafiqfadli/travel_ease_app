@@ -8,7 +8,6 @@ import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
-import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/favourite_place_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/marker_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/polyline_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/search_places_cubit.dart';
@@ -25,9 +24,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   final SearchPlacesCubit searchPlaceCubit = appInjector<SearchPlacesCubit>();
-  final SelectPlaceCubit selectPlaceCubit = SelectPlaceCubit();
-  final FavouritePlaceCubit favouritePlaceCubit =
-      appInjector<FavouritePlaceCubit>();
+  final SelectPlaceCubit selectPlaceCubit = appInjector<SelectPlaceCubit>();
   final MarkerListCubit addMarkerCubit = appInjector<MarkerListCubit>();
   final PolylineListCubit addPolylineCubit = PolylineListCubit();
   final TextEditingController placeController = TextEditingController();
@@ -60,7 +57,6 @@ class _MapPageState extends State<MapPage> {
         BlocProvider.value(value: selectPlaceCubit),
         BlocProvider.value(value: addMarkerCubit),
         BlocProvider.value(value: addPolylineCubit),
-        BlocProvider.value(value: favouritePlaceCubit),
       ],
       child: Stack(
         children: [
@@ -112,11 +108,15 @@ class _MapPageState extends State<MapPage> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
+                          ),
                           color: PrimaryColor.pureWhite,
                         ),
                         child: ListView.builder(
+                          physics: const BouncingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics(),
+                          ),
                           shrinkWrap: places.length <= 3,
                           itemCount: places.length,
                           itemBuilder: (context, index) {

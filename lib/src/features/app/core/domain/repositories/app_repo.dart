@@ -7,14 +7,26 @@ import 'package:travel_ease_app/src/features/app/core/domain/entities/user_entit
 
 abstract class AppRepo {
   Future<Either<Failure, UserEntity>> userInfo(String token);
-  Future<Either<Failure, List<PlaceEntity>>> searchPlaces(String query);
-  Future<Either<Failure, List<PlaceEntity>>> searchNearby(
-    LocationEntity locationEntity,
+  Future<Either<Failure, List<PlaceEntity>>> searchGoogleNearby({
+    String? placeName,
+    String? type,
+    required bool isAttraction,
+    required LocationEntity locationEntity,
+  });
+  Future<Either<Failure, PlaceEntity>> getGooglePlace(String placeId);
+  Future<Either<Failure, List<PlaceEntity>>> getPlaceListCache({
+    required String key,
+    String? placeName,
+    LocationEntity? location,
+  });
+  Future<void> setFavouriteCache(
+    String email,
+    PlaceEntity placeEntity,
+    bool isFavourite,
   );
-  Future<Either<Failure, PlaceEntity>> placeDetails(String placeId);
-  Future<Either<Failure, List<PlaceEntity>>> getPlacesFromStorage();
-  Future<void> favouritePlace(PlaceEntity placeEntity, bool isFavourite);
-  Future<Either<Failure, List<PlaceEntity>>> getFavouritePlace();
+  Future<Either<Failure, List<PlaceEntity>>> getFavouriteListCache(
+    String email,
+  );
 }
 
 class AppRepoImpl implements AppRepo {
@@ -33,21 +45,17 @@ class AppRepoImpl implements AppRepo {
   }
 
   @override
-  Future<Either<Failure, List<PlaceEntity>>> searchPlaces(String query) async {
-    final placesEither = await appDataSource.searchPlaces(query);
-
-    return placesEither.fold(
-      (failure) => Left(SystemFailure(message: failure.message)),
-      (places) => Right(places),
-    );
-  }
-
-  @override
-  Future<Either<Failure, List<PlaceEntity>>> searchNearby(
-    LocationEntity locationEntity,
-  ) async {
-    final placesEither = await appDataSource.searchNearby(
-      locationEntity,
+  Future<Either<Failure, List<PlaceEntity>>> searchGoogleNearby({
+    String? placeName,
+    String? type,
+    required bool isAttraction,
+    required LocationEntity locationEntity,
+  }) async {
+    final placesEither = await appDataSource.searchGoogleNearby(
+      placeName: placeName,
+      type: type,
+      isAttraction: isAttraction,
+      locationEntity: locationEntity,
     );
 
     return placesEither.fold(
@@ -57,8 +65,8 @@ class AppRepoImpl implements AppRepo {
   }
 
   @override
-  Future<Either<Failure, PlaceEntity>> placeDetails(String placeId) async {
-    final placeEither = await appDataSource.placeDetails(placeId);
+  Future<Either<Failure, PlaceEntity>> getGooglePlace(String placeId) async {
+    final placeEither = await appDataSource.getGooglePlace(placeId);
 
     return placeEither.fold(
       (failure) => Left(SystemFailure(message: failure.message)),
@@ -67,8 +75,16 @@ class AppRepoImpl implements AppRepo {
   }
 
   @override
-  Future<Either<Failure, List<PlaceEntity>>> getPlacesFromStorage() async {
-    final placesEither = await appDataSource.getPlacesFromStorage();
+  Future<Either<Failure, List<PlaceEntity>>> getPlaceListCache({
+    required String key,
+    String? placeName,
+    LocationEntity? location,
+  }) async {
+    final placesEither = await appDataSource.getPlaceListCache(
+      key: key,
+      placeName: placeName,
+      location: location,
+    );
 
     return placesEither.fold(
       (failure) => Left(SystemFailure(message: failure.message)),
@@ -77,13 +93,23 @@ class AppRepoImpl implements AppRepo {
   }
 
   @override
-  Future<void> favouritePlace(PlaceEntity placeEntity, bool isFavourite) async {
-    await appDataSource.favouritePlace(placeEntity, isFavourite);
+  Future<void> setFavouriteCache(
+    String email,
+    PlaceEntity placeEntity,
+    bool isFavourite,
+  ) async {
+    await appDataSource.setFavouriteCache(
+      email,
+      placeEntity,
+      isFavourite,
+    );
   }
 
   @override
-  Future<Either<Failure, List<PlaceEntity>>> getFavouritePlace() async {
-    final placesEither = await appDataSource.getFavouritePlace();
+  Future<Either<Failure, List<PlaceEntity>>> getFavouriteListCache(
+    String email,
+  ) async {
+    final placesEither = await appDataSource.getFavouriteListCache(email);
 
     return placesEither.fold(
       (failure) => Left(SystemFailure(message: failure.message)),
