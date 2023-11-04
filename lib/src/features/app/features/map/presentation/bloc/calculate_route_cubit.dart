@@ -21,7 +21,7 @@ class CalculateRouteCubit extends Cubit<CalculateRouteState> {
     List<PlaceEntity> placeList = [];
     List<DirectionEntity> directionList = [];
     DirectionEntity directionEntity = DirectionEntity.empty;
-    double cost = 0;
+    Map<String, double> cost = {};
 
     emit(const CalculateRouteLoading(status: 'Getting places data...'));
 
@@ -39,11 +39,7 @@ class CalculateRouteCubit extends Cubit<CalculateRouteState> {
       placeList = _getPlacesWithPrice(apiPlaces, cachePlaces);
 
       for (var element in placeList) {
-        cost += _calculateCost(element.prices);
-      }
-
-      if (placeList.isNotEmpty) {
-        cost = cost / placeList.length; //Calculate average
+        _calculateCost(cost, element.prices);
       }
     }
 
@@ -88,14 +84,17 @@ class CalculateRouteCubit extends Cubit<CalculateRouteState> {
     return commonElements;
   }
 
-  double _calculateCost(List<PriceEntity> prices) {
-    double cost = 0;
-
+  void _calculateCost(Map<String, double> cost, List<PriceEntity> prices) {
     for (var element in prices) {
-      cost += element.price;
-    }
+      final category = element.category;
+      final price = element.price;
 
-    return cost;
+      if (cost.containsKey(category)) {
+        cost[category] = (cost[category] ?? 0) + price;
+      } else {
+        cost[category] = price;
+      }
+    }
   }
 
   DirectionEntity _calculateDirection(List<DirectionEntity> directionList) {

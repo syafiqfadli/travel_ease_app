@@ -20,7 +20,7 @@ final class CalculateRouteLoading extends CalculateRouteState {
 
 final class CalculateRouteLoaded extends CalculateRouteState {
   final DirectionEntity direction;
-  final double cost;
+  final Map<String, double> cost;
 
   const CalculateRouteLoaded({required this.direction, required this.cost});
 

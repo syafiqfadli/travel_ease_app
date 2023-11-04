@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/helper.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/direction_entity.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/widgets/column_builder.dart';
 
 class CalculateResultCard extends StatelessWidget {
   final String mode;
-  final double cost;
+  final Map<String, double> cost;
   final DirectionEntity? direction;
 
   const CalculateResultCard({
@@ -38,22 +39,20 @@ class CalculateResultCard extends StatelessWidget {
               size: 40,
             ),
             SizedBox(
-              width: 220,
+              width: 250,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  item(
-                    'Average Cost: ',
-                    "RM ${((cost * 10).roundToDouble() / 10).toStringAsFixed(2)}",
-                  ),
-                  item(
+                  _totalItem('Cost: ', cost),
+                  const SizedBox(height: 10),
+                  _directionItem(
                     'Total Duration:  ',
                     direction == null
                         ? 'N/A'
                         : TimeHelper.convertSecondsToTime(direction!.duration),
                   ),
-                  item(
+                  _directionItem(
                     'Total Distance:  ',
                     direction == null
                         ? 'N/A'
@@ -68,7 +67,7 @@ class CalculateResultCard extends StatelessWidget {
     );
   }
 
-  Widget item(String title, String value) {
+  Widget _directionItem(String title, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -84,6 +83,53 @@ class CalculateResultCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _totalItem(String title, Map<String, double> cost) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 16),
+        ),
+        ColumnBuilder(
+          itemCount: cost.length,
+          itemBuilder: (context, index) {
+            String category = cost.keys.elementAt(index);
+            double total = cost[category]!;
+
+            return SizedBox(
+              width: 120,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: AutoSizeText(
+                      'RM${total.toStringAsFixed(2)}',
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: AutoSizeText(
+                      '($category)',
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ],
     );

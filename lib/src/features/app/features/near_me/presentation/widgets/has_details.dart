@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
-import 'package:travel_ease_app/src/features/app/features/near_me/presentation/widgets/column_builder.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/widgets/column_builder.dart';
 
 class HasDetails extends StatelessWidget {
   final PlaceEntity place;

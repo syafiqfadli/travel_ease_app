@@ -58,7 +58,7 @@ class _CalculatePageState extends State<CalculatePage> {
             }
 
             if (state is CalculateRouteLoaded) {
-              final double cost = state.cost;
+              final Map<String, double> cost = state.cost;
               final DirectionEntity direction = state.direction;
               final int destination = showRouteCubit.state.length;
 
