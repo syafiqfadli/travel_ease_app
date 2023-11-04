@@ -17,6 +17,8 @@ class MarkerListCubit extends Cubit<List<Marker>> {
   }) : super([]);
 
   void getMarkerList() async {
+    emit([]);
+
     final user = userInfoCubit.state as UserInfoLoaded;
 
     final placesEither = await appRepo.getPlacesCache(
@@ -28,8 +30,22 @@ class MarkerListCubit extends Cubit<List<Marker>> {
     final filteredList = places.where((element) => element.hasMarker).toList();
 
     for (var place in filteredList) {
-      addMarker(place);
+      Marker marker = Marker(
+        markerId: MarkerId(place.placeId),
+        position: LatLng(
+          place.location.latitude,
+          place.location.longitude,
+        ),
+        consumeTapEvents: true,
+        onTap: () {
+          _onMarkerTap(place);
+        },
+      );
+
+      state.add(marker);
     }
+
+    emit(state);
   }
 
   void addMarker(PlaceEntity place) {
@@ -41,7 +57,7 @@ class MarkerListCubit extends Cubit<List<Marker>> {
       ),
       consumeTapEvents: true,
       onTap: () {
-         _onMarkerTap(place);
+        _onMarkerTap(place);
       },
     );
 
@@ -64,10 +80,6 @@ class MarkerListCubit extends Cubit<List<Marker>> {
   }
 
   void _onMarkerTap(PlaceEntity place) {
-    if (selectPlaceCubit.state != null) {
-      return;
-    }
-
     selectPlaceCubit.placeSelected(place);
   }
 }

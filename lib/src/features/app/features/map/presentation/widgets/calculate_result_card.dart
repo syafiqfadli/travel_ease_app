@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
-import 'package:travel_ease_app/src/core/utils/helper.dart';
+import 'package:travel_ease_app/src/core/utils/helpers.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/direction_entity.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/widgets/column_builder.dart';
 
@@ -44,7 +44,7 @@ class CalculateResultCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _totalItem('Cost: ', cost),
+                  _totalItem('Cost/Pax: ', cost),
                   const SizedBox(height: 10),
                   _directionItem(
                     'Total Duration:  ',

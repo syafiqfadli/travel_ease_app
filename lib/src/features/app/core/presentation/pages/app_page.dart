@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:travel_ease_app/src/core/app/presentation/bloc/app_info_cubit.dart';
+import 'package:travel_ease_app/src/core/core_injector.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/services.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
@@ -22,6 +24,7 @@ class AppPage extends StatefulWidget {
 }
 
 class _AppPageState extends State<AppPage> {
+  final AppInfoCubit appInfoCubit = coreInjector<AppInfoCubit>();
   final SetPageCubit setPageCubit = SetPageCubit();
   final UserInfoCubit userInfoCubit = appInjector<UserInfoCubit>();
   final LogoutCubit logOutCubit = authInjector<LogoutCubit>();
@@ -34,6 +37,12 @@ class _AppPageState extends State<AppPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    appInfoCubit.getAppInfo();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double safePadding = MediaQuery.of(context).padding.top;
 
@@ -42,6 +51,7 @@ class _AppPageState extends State<AppPage> {
         BlocProvider(create: (context) => setPageCubit),
         BlocProvider.value(value: userInfoCubit),
         BlocProvider.value(value: logOutCubit),
+        BlocProvider.value(value: appInfoCubit),
       ],
       child: BlocListener<UserInfoCubit, UserInfoState>(
         listener: (context, state) async {
