@@ -14,8 +14,7 @@ class PlaceDetailsCubit extends Cubit<PlaceDetailsState> {
   void getPlaceDetails(String placeId) async {
     emit(PlaceDetailsLoading());
 
-    final placesEither =
-        await appRepo.getPlaceListCache(key: LocalKey.nearbyKey);
+    final placesEither = await appRepo.getNearbyCache(key: LocalKey.nearbyKey);
 
     final places = placesEither.getOrElse(() => []);
 
@@ -28,7 +27,7 @@ class PlaceDetailsCubit extends Cubit<PlaceDetailsState> {
       }
     }
 
-    final placeEither = await appRepo.getGooglePlace(placeId);
+    final placeEither = await appRepo.getGooglePlaceDetails(placeId);
 
     placeEither.fold(
       (failure) => emit(PlaceDetailsError(message: failure.message)),

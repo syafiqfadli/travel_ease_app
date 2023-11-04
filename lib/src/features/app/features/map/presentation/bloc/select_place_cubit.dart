@@ -14,7 +14,7 @@ class SelectPlaceCubit extends Cubit<PlaceEntity?> {
   void placeSelected(PlaceEntity place) async {
     final user = userInfoCubit.state as UserInfoLoaded;
 
-    final placesEither = await appRepo.getFavouriteListCache(
+    final placesEither = await appRepo.getPlacesCache(
       user.userEntity.email,
     );
 
@@ -45,10 +45,32 @@ class SelectPlaceCubit extends Cubit<PlaceEntity?> {
       phoneNo: place.phoneNo,
     );
 
-    await appRepo.setFavouriteCache(
+    await appRepo.setPlacesCache(
       user.userEntity.email,
       tempPlace,
-      tempPlace.isFavourite,
+    );
+
+    emit(tempPlace);
+  }
+
+  void setMarker(PlaceEntity place) async {
+    final user = userInfoCubit.state as UserInfoLoaded;
+
+    final tempPlace = PlaceEntity(
+      placeId: place.placeId,
+      placeName: place.placeName,
+      prices: place.prices,
+      location: place.location,
+      isFavourite: place.isFavourite,
+      hasMarker: !place.hasMarker,
+      businessHours: place.businessHours,
+      address: place.address,
+      phoneNo: place.phoneNo,
+    );
+
+    await appRepo.setPlacesCache(
+      user.userEntity.email,
+      tempPlace,
     );
 
     emit(tempPlace);

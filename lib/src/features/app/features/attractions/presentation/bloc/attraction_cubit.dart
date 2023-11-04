@@ -18,7 +18,7 @@ class AttractionCubit extends Cubit<AttractionState> {
   ) async {
     emit(AttractionLoading(message: 'Finding places in $placeName...'));
 
-    final placesEither = await appRepo.getPlaceListCache(
+    final placesEither = await appRepo.getNearbyCache(
       key: LocalKey.attractionKey,
       placeName: placeName,
       location: locationEntity,

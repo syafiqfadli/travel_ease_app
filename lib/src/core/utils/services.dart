@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/pages/route_page.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/pages/login_page.dart';
 
 class DialogService {
   static Future showMessage<T>({
     required String title,
+    required bool hasAction,
+    void Function()? actionFunction,
     String? message,
     required IconData icon,
     required BuildContext context,
@@ -46,6 +49,29 @@ class DialogService {
               child: const Text('Close'),
             ),
           ),
+          hasAction
+              ? SizedBox(
+                  width: width,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RoutePage(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      foregroundColor: PrimaryColor.navyBlack,
+                      backgroundColor: PrimaryColor.pureWhite,
+                      side: BorderSide(color: PrimaryColor.navyBlack),
+                    ),
+                    child: const Text('View'),
+                  ),
+                )
+              : const SizedBox.shrink(),
         ],
       ),
     );

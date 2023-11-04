@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
+import 'package:travel_ease_app/src/core/utils/services.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/set_page_cubit.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/user_info_cubit.dart';
@@ -33,12 +34,6 @@ class _AppPageState extends State<AppPage> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    userInfoCubit.getUser();
-  }
-
-  @override
   Widget build(BuildContext context) {
     double safePadding = MediaQuery.of(context).padding.top;
 
@@ -49,8 +44,16 @@ class _AppPageState extends State<AppPage> {
         BlocProvider.value(value: logOutCubit),
       ],
       child: BlocListener<UserInfoCubit, UserInfoState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is UserInfoError) {
+            await DialogService.showMessage(
+              title: 'Error',
+              message: state.message,
+              hasAction: false,
+              icon: Icons.error,
+              context: context,
+            );
+
             _logout();
           }
         },

@@ -31,6 +31,7 @@ void authInit() {
   authInjector.registerLazySingleton<LoginCubit>(
     () => LoginCubit(
       authRepo: authInjector(),
+      userInfoCubit: authInjector(),
       tokenCubit: authInjector(),
     ),
   );
@@ -40,7 +41,10 @@ void authInit() {
   );
 
   authInjector.registerLazySingleton<LogoutCubit>(
-    () => LogoutCubit(authRepo: authInjector()),
+    () => LogoutCubit(
+      authRepo: authInjector(),
+      tokenCubit: authInjector(),
+    ),
   );
 
   authInjector.registerLazySingleton<ResetPasswordCubit>(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
@@ -29,17 +30,23 @@ abstract class ApiDataSource {
 
 class ApiDataSourceImpl implements ApiDataSource {
   @override
-  Future<Either<Failure, ResponseModel>> get(Uri url,
-      {Map<String, String>? headers}) async {
+  Future<Either<Failure, ResponseModel>> get(
+    Uri url, {
+    Map<String, String>? headers,
+  }) async {
     try {
-      final rawResponse = await http.get(
-        url,
-        headers: headers,
-      );
+      final rawResponse = await http
+          .get(
+            url,
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: 15));
 
       final response = ResponseModel.fromJson(jsonDecode(rawResponse.body));
 
       return Right(response);
+    } on TimeoutException catch (error) {
+      return Left(ServerFailure(message: error.toString()));
     } catch (error) {
       return Left(ServerFailure(message: error.toString()));
     }
@@ -52,15 +59,19 @@ class ApiDataSourceImpl implements ApiDataSource {
     required Map<String, dynamic> body,
   }) async {
     try {
-      final rawResponse = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(body),
-      );
+      final rawResponse = await http
+          .post(
+            url,
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 15));
 
       final response = ResponseModel.fromJson(jsonDecode(rawResponse.body));
 
       return Right(response);
+    } on TimeoutException catch (error) {
+      return Left(ServerFailure(message: error.toString()));
     } catch (error) {
       return Left(ServerFailure(message: error.toString()));
     }
@@ -73,15 +84,19 @@ class ApiDataSourceImpl implements ApiDataSource {
     required Map<String, dynamic> body,
   }) async {
     try {
-      final rawResponse = await http.patch(
-        url,
-        headers: headers,
-        body: jsonEncode(body),
-      );
+      final rawResponse = await http
+          .patch(
+            url,
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 15));
 
       final response = ResponseModel.fromJson(jsonDecode(rawResponse.body));
 
       return Right(response);
+    } on TimeoutException catch (error) {
+      return Left(ServerFailure(message: error.toString()));
     } catch (error) {
       return Left(ServerFailure(message: error.toString()));
     }
@@ -94,15 +109,19 @@ class ApiDataSourceImpl implements ApiDataSource {
     Map<String, dynamic>? body,
   }) async {
     try {
-      final rawResponse = await http.delete(
-        url,
-        headers: headers,
-        body: jsonEncode(body),
-      );
+      final rawResponse = await http
+          .delete(
+            url,
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 15));
 
       final response = ResponseModel.fromJson(jsonDecode(rawResponse.body));
 
       return Right(response);
+    } on TimeoutException catch (error) {
+      return Left(ServerFailure(message: error.toString()));
     } catch (error) {
       return Left(ServerFailure(message: error.toString()));
     }

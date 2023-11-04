@@ -8,7 +8,7 @@ class TokenCubit extends Cubit<String?> {
 
   TokenCubit({required this.localDataSource}) : super(null);
 
-  void getToken(String? token) {
+  void setToken(String? token) {
     emit(token);
   }
 

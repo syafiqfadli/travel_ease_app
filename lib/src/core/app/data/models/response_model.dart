@@ -18,4 +18,10 @@ class ResponseModel extends ResponseEntity {
       message: parseJson['message'] ?? '',
     );
   }
+
+  static get empty => const ResponseModel(
+        isSuccess: false,
+        data: {},
+        message: '',
+      );
 }

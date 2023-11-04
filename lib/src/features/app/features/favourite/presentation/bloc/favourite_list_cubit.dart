@@ -18,13 +18,16 @@ class FavouriteListCubit extends Cubit<FavouriteListState> {
   void getFavouritePlaces() async {
     final user = userInfoCubit.state as UserInfoLoaded;
 
-    final placesEither = await appRepo.getFavouriteListCache(
+    final placesEither = await appRepo.getPlacesCache(
       user.userEntity.email,
     );
 
     final places = placesEither.getOrElse(() => []);
 
-    emit(FavouriteLoaded(places: places));
+    final filteredPlaces =
+        places.where((element) => element.isFavourite).toList();
+
+    emit(FavouriteLoaded(places: filteredPlaces));
   }
 
   void removeFavourite(PlaceEntity place) async {
@@ -42,10 +45,9 @@ class FavouriteListCubit extends Cubit<FavouriteListState> {
       phoneNo: place.phoneNo,
     );
 
-    await appRepo.setFavouriteCache(
+    await appRepo.setPlacesCache(
       user.userEntity.email,
       tempPlace,
-      false,
     );
 
     getFavouritePlaces();

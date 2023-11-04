@@ -27,6 +27,7 @@ class DrawerItem extends StatelessWidget {
               builder: (context, state) {
                 if (state is UserInfoLoaded) {
                   final user = state.userEntity;
+                  
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

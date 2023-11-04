@@ -18,6 +18,11 @@ class UserInfoCubit extends Cubit<UserInfoState> {
   Future<void> getUser() async {
     emit(UserInfoLoading());
 
+    if (tokenCubit.state == null) {
+      emit(const UserInfoError(message: 'No token.'));
+      return;
+    }
+
     final userEither = await appRepo.userInfo(tokenCubit.state!);
 
     userEither.fold(

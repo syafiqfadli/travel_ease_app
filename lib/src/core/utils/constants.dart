@@ -5,7 +5,7 @@ class LocalKey {
   static String tokenKey = "token";
   static String nearbyKey = "nearby";
   static String attractionKey = "attraction";
-  static String userKey = "user";
+  static String placesKey = "places";
 }
 
 class ApiUrl {
@@ -18,9 +18,11 @@ class ApiUrl {
   static String signUp = "$_baseUrl/auth/sign-up";
   static String resetPassword = "$_baseUrl/auth/reset-password";
   static String userInfo = "$_baseUrl/user/info";
+  static String placeList = "$_baseUrl/place/list";
   static String placeGoogleText = "$_baseUrl/place/google-text";
   static String placeGoogleNearby = "$_baseUrl/place/google-nearby";
   static String placeGoogleDetails = "$_baseUrl/place/google-details";
+  static String placeGoogleDirection = "$_baseUrl/place/google-direction";
 }
 
 class PrimaryColor {

@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:travel_ease_app/src/core/app/data/datasources/api_datasource.dart';
 import 'package:travel_ease_app/src/core/app/data/datasources/local_datasource.dart';
-import 'package:travel_ease_app/src/core/app/domain/entities/response_entity.dart';
 import 'package:travel_ease_app/src/core/errors/failures.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/auth/core/data/models/token_model.dart';
@@ -25,30 +24,32 @@ class AuthDataSourceImpl implements AuthDataSource {
 
   @override
   Future<Either<Failure, TokenModel>> logIn(AuthEntity authEntity) async {
-    try {
-      final apiEither = await apiDataSource.post(
-        Uri.parse(ApiUrl.logIn),
-        headers: {'Content-Type': 'application/json'},
-        body: {
-          "email": authEntity.email,
-          "password": authEntity.password,
-        },
-      );
+    final apiEither = await apiDataSource.post(
+      Uri.parse(ApiUrl.logIn),
+      headers: {'Content-Type': 'application/json'},
+      body: {
+        "email": authEntity.email,
+        "password": authEntity.password,
+      },
+    );
 
-      final response = apiEither.getOrElse(() => ResponseEntity.empty);
-
-      if (!response.isSuccess) {
+    return apiEither.fold(
+      (failure) async {
         await localDataSource.remove(LocalKey.tokenKey);
-        return Left(SystemFailure(message: response.message));
-      }
+        return Left(SystemFailure(message: failure.message));
+      },
+      (response) async {
+        if (!response.isSuccess) {
+          await localDataSource.remove(LocalKey.tokenKey);
+          return Left(SystemFailure(message: response.message));
+        }
 
-      final tokenModel = TokenModel.fromJson(response.data);
-      await localDataSource.store(LocalKey.tokenKey, response.data);
+        final tokenModel = TokenModel.fromJson(response.data);
+        await localDataSource.store(LocalKey.tokenKey, response.data);
 
-      return Right(tokenModel);
-    } catch (error) {
-      return Left(SystemFailure(message: error.toString()));
-    }
+        return Right(tokenModel);
+      },
+    );
   }
 
   @override
@@ -63,13 +64,18 @@ class AuthDataSourceImpl implements AuthDataSource {
       },
     );
 
-    final response = apiEither.getOrElse(() => ResponseEntity.empty);
+    return apiEither.fold(
+      (failure) async {
+        return Left(SystemFailure(message: failure.message));
+      },
+      (response) async {
+        if (!response.isSuccess) {
+          return Left(SystemFailure(message: response.message));
+        }
 
-    if (!response.isSuccess) {
-      return Left(SystemFailure(message: response.message));
-    }
-
-    return Right(response.message);
+        return Right(response.message);
+      },
+    );
   }
 
   @override
@@ -89,12 +95,17 @@ class AuthDataSourceImpl implements AuthDataSource {
       },
     );
 
-    final response = apiEither.getOrElse(() => ResponseEntity.empty);
+    return apiEither.fold(
+      (failure) async {
+        return Left(SystemFailure(message: failure.message));
+      },
+      (response) async {
+        if (!response.isSuccess) {
+          return Left(SystemFailure(message: response.message));
+        }
 
-    if (!response.isSuccess) {
-      return Left(SystemFailure(message: response.message));
-    }
-
-    return Right(response.message);
+        return Right(response.message);
+      },
+    );
   }
 }

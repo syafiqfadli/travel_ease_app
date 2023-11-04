@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
+import 'package:travel_ease_app/src/core/utils/services.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/marker_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/select_place_cubit.dart';
@@ -61,7 +62,7 @@ class _PlaceDetailsCardState extends State<PlaceDetailsCard> {
                     BlocBuilder<SelectPlaceCubit, PlaceEntity?>(
                       builder: (context, state) {
                         return IconButton(
-                          onPressed: () => _favouritePlace(state),
+                          onPressed: _favouritePlace,
                           icon: Icon(
                             state!.isFavourite
                                 ? Icons.favorite_rounded
@@ -85,35 +86,19 @@ class _PlaceDetailsCardState extends State<PlaceDetailsCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                  onPressed: () => _goToPlace(),
+                  onPressed: _goToPlace,
                   style: ElevatedButton.styleFrom(
                     fixedSize: const Size(120, 20),
                     backgroundColor: PrimaryColor.navyBlack,
                   ),
                   child: const Text('Go'),
                 ),
-                BlocSelector<MarkerListCubit, List<Marker>, bool>(
-                  selector: (markers) {
-                    if (markers.isNotEmpty) {
-                      for (var data in markers) {
-                        if (data.markerId.value == widget.place.placeId) {
-                          return true;
-                        }
-                      }
-                    }
-
-                    return false;
-                  },
-                  builder: (context, hasMarker) {
+                BlocBuilder<SelectPlaceCubit, PlaceEntity?>(
+                  builder: (context, place) {
                     return ElevatedButton(
-                      onPressed: hasMarker
-                          ? () {
-                              _removePlaceMarker();
-                            }
-                          : () {
-                              _addPlaceMarker();
-                              _computePath();
-                            },
+                      onPressed: place!.hasMarker
+                          ? _removePlaceMarker
+                          : _addPlaceMarker,
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
                         fixedSize: const Size(120, 20),
@@ -121,7 +106,7 @@ class _PlaceDetailsCardState extends State<PlaceDetailsCard> {
                         backgroundColor: PrimaryColor.pureWhite,
                         side: BorderSide(color: PrimaryColor.navyBlack),
                       ),
-                      child: Text(hasMarker ? 'Remove' : 'Add'),
+                      child: Text(place.hasMarker ? 'Remove' : 'Add'),
                     );
                   },
                 ),
@@ -150,27 +135,31 @@ class _PlaceDetailsCardState extends State<PlaceDetailsCard> {
     );
   }
 
-  void _favouritePlace(PlaceEntity place) {
-    context.read<SelectPlaceCubit>().setFavouritePlace(place);
+  void _favouritePlace() {
+    context.read<SelectPlaceCubit>().setFavouritePlace(widget.place);
   }
 
   void _addPlaceMarker() {
-    Marker marker = Marker(
-      markerId: MarkerId(widget.place.placeId),
-      position: LatLng(
-        widget.place.location.latitude,
-        widget.place.location.longitude,
-      ),
-    );
+    if (context.read<MarkerListCubit>().state.length == 4) {
+      DialogService.showMessage(
+        title: 'Limit reached.',
+        message: "You can only add place to route only up to 4 only.",
+        hasAction: false,
+        icon: Icons.warning,
+        context: context,
+      );
 
-    context.read<MarkerListCubit>().add(marker);
+      return;
+    }
+
+    context.read<MarkerListCubit>().addMarker(widget.place);
+    context.read<SelectPlaceCubit>().setMarker(widget.place);
+
+    _goToPlace();
   }
 
   void _removePlaceMarker() {
-    context.read<MarkerListCubit>().remove(widget.place.placeId);
-  }
-
-  void _computePath() {
-    // final markers = context.read<AddMarkerCubit>().state;
+    context.read<MarkerListCubit>().removeMarker(widget.place.placeId);
+    context.read<SelectPlaceCubit>().setMarker(widget.place);
   }
 }

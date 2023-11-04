@@ -13,10 +13,4 @@ class ResponseEntity extends Equatable {
 
   @override
   List<Object?> get props => [isSuccess, data, message];
-
-  static get empty => const ResponseEntity(
-        isSuccess: false,
-        data: {},
-        message: '',
-      );
 }

@@ -12,6 +12,8 @@ import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/polyline_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/search_places_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/select_place_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/pages/route_page.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/map_widget.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/place_card.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/place_details_card.dart';
 
@@ -25,19 +27,23 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   final SearchPlacesCubit searchPlaceCubit = appInjector<SearchPlacesCubit>();
   final SelectPlaceCubit selectPlaceCubit = appInjector<SelectPlaceCubit>();
-  final MarkerListCubit addMarkerCubit = appInjector<MarkerListCubit>();
-  final PolylineListCubit addPolylineCubit = PolylineListCubit();
+  final MarkerListCubit markerListCubit = appInjector<MarkerListCubit>();
+  final PolylineListCubit polylineListCubit = appInjector<PolylineListCubit>();
   final TextEditingController placeController = TextEditingController();
 
-  final Completer<GoogleMapController> completerController =
+  final Completer<GoogleMapController> googleController =
       Completer<GoogleMapController>();
 
-  static const CameraPosition _initPosition = CameraPosition(
+  static const CameraPosition initPosition = CameraPosition(
     target: LatLng(2.1926, 102.2505),
     zoom: 14.45,
   );
 
-  List<LatLng> routeCoords = [];
+  @override
+  void initState() {
+    super.initState();
+    markerListCubit.getMarkerList();
+  }
 
   @override
   void dispose() {
@@ -55,41 +61,50 @@ class _MapPageState extends State<MapPage> {
       providers: [
         BlocProvider.value(value: searchPlaceCubit),
         BlocProvider.value(value: selectPlaceCubit),
-        BlocProvider.value(value: addMarkerCubit),
-        BlocProvider.value(value: addPolylineCubit),
+        BlocProvider.value(value: markerListCubit),
+        BlocProvider.value(value: polylineListCubit),
       ],
       child: Stack(
         children: [
-          BlocBuilder<MarkerListCubit, List<Marker>>(
-            builder: (context, markers) {
-              return BlocBuilder<PolylineListCubit, List<Polyline>>(
-                builder: (context, polylines) {
-                  return GoogleMap(
-                    mapType: MapType.normal,
-                    initialCameraPosition: _initPosition,
-                    markers: Set.from(markers),
-                    polylines: Set.from(polylines),
-                    onMapCreated: (GoogleMapController controller) {
-                      completerController.complete(controller);
-                    },
-                  );
-                },
-              );
-            },
+          MapWidget(
+            initPosition: initPosition,
+            isRoute: false,
+            googleController: googleController,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Column(
               children: [
-                CustomInputField(
-                  textController: placeController,
-                  hint: "Search Place...",
-                  suffixIcon: IconButton(
-                    onPressed: () => _searchPlace(),
-                    icon: const Icon(Icons.search),
-                  ),
-                  hasBorder: true,
-                  onFieldSubmitted: (_) => _searchPlace(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomInputField(
+                        textController: placeController,
+                        hint: "Search Place...",
+                        suffixIcon: IconButton(
+                          onPressed: _searchPlace,
+                          icon: const Icon(Icons.search),
+                        ),
+                        hasBorder: true,
+                        onFieldSubmitted: (_) => _searchPlace(),
+                        onChanged: (value) {
+                          if (value!.isEmpty) {
+                            searchPlaceCubit.clearSearch();
+                            selectPlaceCubit.removePlace();
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: _navigateToRoutePage,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(10),
+                        backgroundColor: PrimaryColor.navyBlack,
+                      ),
+                      child: const Icon(Icons.airline_stops),
+                    )
+                  ],
                 ),
                 const SizedBox(height: 5),
                 BlocBuilder<SearchPlacesCubit, SearchPlacesState>(
@@ -98,7 +113,19 @@ class _MapPageState extends State<MapPage> {
                       final places = state.places;
 
                       if (places.isEmpty) {
-                        return const SizedBox.shrink();
+                        return Container(
+                          height: 100,
+                          width: width,
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                            color: PrimaryColor.pureWhite,
+                          ),
+                          child: const Center(
+                            child: Text("No place found."),
+                          ),
+                        );
                       }
 
                       return Container(
@@ -131,11 +158,28 @@ class _MapPageState extends State<MapPage> {
                         height: 100,
                         width: width,
                         decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
+                          ),
                           color: PrimaryColor.pureWhite,
                         ),
                         child: const CustomLoading(),
+                      );
+                    }
+
+                    if (state is SearchPlacesError) {
+                      return Container(
+                        height: 100,
+                        width: width,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                          color: PrimaryColor.pureWhite,
+                        ),
+                        child: Center(
+                          child: Text(state.message),
+                        ),
                       );
                     }
 
@@ -155,7 +199,7 @@ class _MapPageState extends State<MapPage> {
                       ? const SizedBox.shrink()
                       : PlaceDetailsCard(
                           place: state,
-                          completerController: completerController,
+                          completerController: googleController,
                         ),
                 ),
               );
@@ -170,5 +214,20 @@ class _MapPageState extends State<MapPage> {
     final String query = placeController.text;
 
     searchPlaceCubit.searchPlaces(query);
+  }
+
+  void _navigateToRoutePage() async {
+    final bool hasResult = await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const RoutePage(),
+    ));
+
+    if (hasResult) {
+      markerListCubit.getMarkerList();
+      final place = selectPlaceCubit.state;
+
+      if (place != null) {
+        selectPlaceCubit.placeSelected(place);
+      }
+    }
   }
 }

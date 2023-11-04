@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
+import 'package:travel_ease_app/src/features/app/features/near_me/presentation/bloc/nearby_places_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/near_me/presentation/bloc/place_details_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/near_me/presentation/widgets/has_details.dart';
 import 'package:travel_ease_app/src/features/app/features/near_me/presentation/widgets/place_marker_list.dart';
@@ -20,9 +21,23 @@ class HasResult extends StatelessWidget {
       child: SizedBox(
         height: height - kToolbarHeight - kBottomNavigationBarHeight,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            IconButton(
+              onPressed: () {
+                context.read<NearbyPlacesCubit>().searchPlaces();
+              },
+              icon: const Icon(
+                Icons.restart_alt_rounded,
+                size: 30,
+              ),
+            ),
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+              padding: EdgeInsets.only(
+                bottom: 30,
+                left: 20,
+                right: 20,
+              ),
               child: Column(
                 children: [
                   Text(

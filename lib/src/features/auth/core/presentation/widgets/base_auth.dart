@@ -24,6 +24,7 @@ class _BaseAuthState extends State<BaseAuth> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
+    final safePadding = MediaQuery.of(context).padding.top;
 
     return WillPopScope(
       onWillPop: () {
@@ -44,12 +45,16 @@ class _BaseAuthState extends State<BaseAuth> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 40),
+                    SizedBox(height: safePadding),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 30),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Image.asset(
+                            'assets/images/logo.png',
+                            height: 100,
+                          ),
                           Text(
                             widget.title,
                             style: const TextStyle(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_ease_app/src/core/app/presentation/pages/base_auth.dart';
+import 'package:travel_ease_app/src/features/auth/core/presentation/widgets/base_auth.dart';
 import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/input_validator.dart';
@@ -47,6 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
               if (state is SignUpError) {
                 DialogService.showMessage(
                   title: "Error",
+                  hasAction: false,
                   icon: Icons.error,
                   message: state.message,
                   context: context,
@@ -56,6 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
               if (state is SignUpSuccessful) {
                 await DialogService.showMessage(
                   title: "Successful",
+                  hasAction: false,
                   icon: Icons.check,
                   message: state.message,
                   context: context,

@@ -6,7 +6,13 @@ class PriceModel extends PriceEntity {
   factory PriceModel.fromJson(Map<String, dynamic> parseJson) {
     return PriceModel(
       category: parseJson['category'] ?? '',
-      price: parseJson['price'] ?? 0,
+      price: parseJson['price'] != null
+          ? (parseJson['price'].runtimeType == int
+              ? (parseJson['price'] as int).toDouble()
+              : parseJson['price'].runtimeType == double
+                  ? parseJson['price']
+                  : 0)
+          : 0,
     );
   }
 

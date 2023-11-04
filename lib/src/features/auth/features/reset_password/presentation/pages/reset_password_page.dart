@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_ease_app/src/core/app/presentation/pages/base_auth.dart';
+import 'package:travel_ease_app/src/features/auth/core/presentation/widgets/base_auth.dart';
 import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/input_validator.dart';
@@ -43,6 +43,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             DialogService.showMessage(
               title: "Error",
               icon: Icons.error,
+              hasAction: false,
               message: state.message,
               context: context,
             );
@@ -52,6 +53,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             await DialogService.showMessage(
               title: "Successful",
               icon: Icons.check,
+              hasAction: false,
               message: state.message,
               context: context,
             );
