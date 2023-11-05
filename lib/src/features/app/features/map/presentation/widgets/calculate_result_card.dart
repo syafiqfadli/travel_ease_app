@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/helpers.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/direction_entity.dart';
-import 'package:travel_ease_app/src/features/app/core/presentation/widgets/column_builder.dart';
+import 'package:travel_ease_app/src/core/app/presentation/widgets/column_builder.dart';
 
 class CalculateResultCard extends StatelessWidget {
   final String mode;
@@ -20,7 +20,7 @@ class CalculateResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Container(
         height: 150,
         decoration: BoxDecoration(

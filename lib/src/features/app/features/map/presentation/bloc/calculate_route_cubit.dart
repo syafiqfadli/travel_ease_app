@@ -4,6 +4,7 @@ import 'package:travel_ease_app/src/features/app/core/domain/entities/place/dire
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/price_entity.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/repositories/app_repo.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/place_prices_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/show_route_cubit.dart';
 
 part 'calculate_route_state.dart';
@@ -11,10 +12,12 @@ part 'calculate_route_state.dart';
 class CalculateRouteCubit extends Cubit<CalculateRouteState> {
   final AppRepo appRepo;
   final ShowRouteCubit showRouteCubit;
+  final PlacePricesCubit placePricesCubit;
 
   CalculateRouteCubit({
     required this.appRepo,
     required this.showRouteCubit,
+    required this.placePricesCubit,
   }) : super(CalculateRouteInitial());
 
   void calculateRoute() async {
@@ -41,6 +44,10 @@ class CalculateRouteCubit extends Cubit<CalculateRouteState> {
       for (var element in placeList) {
         _calculateCost(cost, element.prices);
       }
+
+      placePricesCubit.getPlacePrices(placeList);
+    } else {
+      placePricesCubit.getPlacePrices(cachePlaces);
     }
 
     // Calculate direction

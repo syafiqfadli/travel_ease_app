@@ -40,12 +40,6 @@ class _MapPageState extends State<MapPage> {
   );
 
   @override
-  void initState() {
-    super.initState();
-    markerListCubit.getMarkerList();
-  }
-
-  @override
   void dispose() {
     super.dispose();
     searchPlaceCubit.clearSearch();

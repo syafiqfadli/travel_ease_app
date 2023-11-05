@@ -9,6 +9,7 @@ import 'package:travel_ease_app/src/features/app/features/map/data/datasources/m
 import 'package:travel_ease_app/src/features/app/features/map/domain/repositories/map_repo.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/calculate_route_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/marker_list_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/place_prices_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/polyline_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/route_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/search_places_cubit.dart';
@@ -118,6 +119,11 @@ void appInit() {
     () => CalculateRouteCubit(
       appRepo: appInjector(),
       showRouteCubit: appInjector(),
+      placePricesCubit: appInjector(),
     ),
+  );
+
+  appInjector.registerLazySingleton<PlacePricesCubit>(
+    () => PlacePricesCubit(),
   );
 }

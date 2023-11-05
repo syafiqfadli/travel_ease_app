@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
+import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
+import 'package:travel_ease_app/src/core/app/presentation/widgets/column_builder.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/pages/route_page.dart';
-import 'package:travel_ease_app/src/features/auth/features/login/presentation/pages/login_page.dart';
 
 class DialogService {
   static Future showMessage<T>({
@@ -28,14 +29,14 @@ class DialogService {
                 style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
-            message != null
-                ? Text(
-                    message,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  )
-                : const SizedBox.shrink(),
           ],
         ),
+        content: message != null
+            ? Text(
+                message,
+                textAlign: TextAlign.center,
+              )
+            : null,
         actions: [
           SizedBox(
             width: width,
@@ -77,58 +78,62 @@ class DialogService {
     );
   }
 
-  static Future logInMessage<T>({
+  static Future showPlacesPrice<T>({
     required BuildContext context,
+    required List<PlaceEntity> places,
   }) async {
     double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
 
     return showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Log In Account"),
-                IconButton(
-                  icon: const Icon(Icons.close_outlined),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ),
-            const Text("👋", style: TextStyle(fontSize: 50)),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Text(
-                "You need to log in first.",
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-            Text(
-              "Please log in or register first to make transactions.",
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        actions: [
-          SizedBox(
-            width: width,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const LoginPage(),
+        title: const Text("Planned Destinations"),
+        content: SizedBox(
+          height: height * 0.5,
+          child: SingleChildScrollView(
+            child: ColumnBuilder(
+              itemCount: places.length,
+              itemBuilder: (context, placeIndex) {
+                return Container(
+                  width: width,
+                  padding: const EdgeInsets.all(20),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: PrimaryColor.navyBlack),
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        places[placeIndex].placeName,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      ColumnBuilder(
+                        itemCount: places[placeIndex].prices.length,
+                        itemBuilder: (context, priceIndex) {
+                          final String category =
+                              places[placeIndex].prices[priceIndex].category;
+                          final double price =
+                              places[placeIndex].prices[priceIndex].price;
+        
+                          return Row(
+                            children: [
+                              Text("$category: "),
+                              Text("RM${price.toStringAsFixed(2)} "),
+                            ],
+                          );
+                        },
+                      )
+                    ],
                   ),
                 );
               },
-              child: const Text('Log In'),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

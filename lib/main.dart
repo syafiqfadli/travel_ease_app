@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 import 'package:travel_ease_app/src/core/core_injector.dart';
 import 'package:travel_ease_app/src/core/utils/services.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/user_info_cubit.dart';
@@ -81,8 +80,10 @@ class _MainAppState extends State<MainApp> {
             }
 
             if (state is UserInfoLoading) {
-              return const Scaffold(
-                body: CustomLoading(),
+              return Scaffold(
+                body: Center(
+                  child: Image.asset("assets/images/logo.png", height: 100),
+                ),
               );
             }
 
