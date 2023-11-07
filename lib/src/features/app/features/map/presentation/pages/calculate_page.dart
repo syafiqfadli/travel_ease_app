@@ -6,7 +6,6 @@ import 'package:travel_ease_app/src/features/app/app_injector.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/direction_entity.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/widgets/loading_status.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/calculate_route_cubit.dart';
-import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/place_prices_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/show_route_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/calculate_result_card.dart';
 
@@ -21,7 +20,6 @@ class _CalculatePageState extends State<CalculatePage> {
   final CalculateRouteCubit calculateRouteCubit =
       appInjector<CalculateRouteCubit>();
   final ShowRouteCubit showRouteCubit = appInjector<ShowRouteCubit>();
-  final PlacePricesCubit placePricesCubit = appInjector<PlacePricesCubit>();
 
   @override
   void initState() {
@@ -41,7 +39,6 @@ class _CalculatePageState extends State<CalculatePage> {
       providers: [
         BlocProvider.value(value: calculateRouteCubit),
         BlocProvider.value(value: showRouteCubit),
-        BlocProvider.value(value: placePricesCubit),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -131,7 +128,7 @@ class _CalculatePageState extends State<CalculatePage> {
   void _showPlannedDestinations() {
     DialogService.showPlacesPrice(
       context: context,
-      places: placePricesCubit.state,
+      places: showRouteCubit.state,
     );
   }
 }

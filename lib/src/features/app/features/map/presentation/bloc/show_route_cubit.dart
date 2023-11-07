@@ -26,15 +26,19 @@ class ShowRouteCubit extends Cubit<List<PlaceEntity>> {
   void getRouteList() async {
     final user = userInfoCubit.state as UserInfoLoaded;
 
+    final apiPlacesEither = await appRepo.placeList();
     final placesEither = await appRepo.getPlacesCache(
       user.userEntity.email,
     );
 
+    final apiPlaces = apiPlacesEither.getOrElse(() => []);
     final places = placesEither.getOrElse(() => []);
 
     final filteredList = places.where((element) => element.hasMarker).toList();
 
-    emit(filteredList);
+    final newPlaces = _getPlacesWithPrice(filteredList, apiPlaces);
+
+    emit(newPlaces);
   }
 
   void removeRoute(PlaceEntity place) async {
@@ -100,5 +104,35 @@ class ShowRouteCubit extends Cubit<List<PlaceEntity>> {
     emit([]);
     polylineListCubit.reset();
     routeCubit.reset();
+  }
+
+  List<PlaceEntity> _getPlacesWithPrice(
+    List<PlaceEntity> listA,
+    List<PlaceEntity> listB,
+  ) {
+    List<PlaceEntity> commonElements = [];
+
+    for (var itemA in listA) {
+      for (var itemB in listB) {
+        if (itemA.placeId == itemB.placeId) {
+          final tempPlace = PlaceEntity(
+            placeId: itemB.placeId,
+            placeName: itemB.placeName,
+            prices: itemA.prices,
+            location: itemB.location,
+            isFavourite: itemB.isFavourite,
+            hasMarker: itemB.hasMarker,
+            businessHours: itemB.businessHours,
+            address: itemB.address,
+            phoneNo: itemB.phoneNo,
+          );
+
+          commonElements.add(tempPlace);
+          break;
+        }
+      }
+    }
+
+    return commonElements;
   }
 }

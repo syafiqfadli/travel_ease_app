@@ -6,7 +6,7 @@ class AppInfoCubit extends Cubit<PackageInfo> {
       : super(
           PackageInfo(
             appName: 'Travel Ease',
-            packageName: 'com.example.travel_ease_app',
+            packageName: 'com.syafiqfadli.travel_ease_app',
             version: '1.0.0',
             buildNumber: '1',
           ),
