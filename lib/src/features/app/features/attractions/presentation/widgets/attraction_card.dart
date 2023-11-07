@@ -6,16 +6,14 @@ import 'package:travel_ease_app/src/features/app/features/attractions/presentati
 
 class AttractionCard extends StatelessWidget {
   final String placeName;
-  final String? image;
+  final String image;
   final LocationEntity location;
-  final bool isClickable;
 
   const AttractionCard({
     super.key,
     required this.placeName,
-    this.image,
+    required this.image,
     required this.location,
-    required this.isClickable,
   });
 
   @override
@@ -23,16 +21,14 @@ class AttractionCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: InkWell(
-        onTap: isClickable
-            ? () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => AttractionListPage(
-                    placeName: placeName,
-                    location: location,
-                  ),
-                ));
-              }
-            : null,
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => AttractionListPage(
+              placeName: placeName,
+              location: location,
+            ),
+          ));
+        },
         child: Container(
           color: PrimaryColor.navyBlack,
           child: Card(
@@ -41,7 +37,7 @@ class AttractionCard extends StatelessWidget {
                 SizedBox(
                   height: 180,
                   child: Image.asset(
-                    'assets/images/${image ?? 'no-pictures.png'}',
+                    'assets/images/$image',
                     fit: BoxFit.fill,
                   ),
                 ),

@@ -5,7 +5,7 @@ import 'package:travel_ease_app/src/features/app/app_injector.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/location_entity.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/widgets/loading_status.dart';
 import 'package:travel_ease_app/src/features/app/features/attractions/presentation/bloc/attraction_cubit.dart';
-import 'package:travel_ease_app/src/features/app/features/attractions/presentation/widgets/attraction_card.dart';
+import 'package:travel_ease_app/src/features/app/features/attractions/presentation/widgets/attraction_list_card.dart';
 
 class AttractionListPage extends StatefulWidget {
   final String placeName;
@@ -58,12 +58,10 @@ class _AttractionListPageState extends State<AttractionListPage> {
                 itemCount: places.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  mainAxisExtent: 300,
+                  mainAxisExtent: 280,
                 ),
-                itemBuilder: (context, index) => AttractionCard(
-                  placeName: places[index].placeName,
-                  location: places[index].location,
-                  isClickable: false,
+                itemBuilder: (context, index) => AttractionListCard(
+                  place: places[index],
                 ),
               );
             }

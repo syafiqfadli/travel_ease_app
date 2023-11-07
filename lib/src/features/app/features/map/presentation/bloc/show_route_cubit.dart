@@ -54,6 +54,8 @@ class ShowRouteCubit extends Cubit<List<PlaceEntity>> {
       businessHours: place.businessHours,
       address: place.address,
       phoneNo: place.phoneNo,
+      rating: place.rating,
+      tags: place.tags,
     );
 
     await appRepo.setPlacesCache(
@@ -116,15 +118,17 @@ class ShowRouteCubit extends Cubit<List<PlaceEntity>> {
       for (var itemB in listB) {
         if (itemA.placeId == itemB.placeId) {
           final tempPlace = PlaceEntity(
-            placeId: itemB.placeId,
-            placeName: itemB.placeName,
-            prices: itemA.prices,
-            location: itemB.location,
-            isFavourite: itemB.isFavourite,
-            hasMarker: itemB.hasMarker,
-            businessHours: itemB.businessHours,
-            address: itemB.address,
-            phoneNo: itemB.phoneNo,
+            placeId: itemA.placeId,
+            placeName: itemA.placeName,
+            prices: itemB.prices,
+            location: itemA.location,
+            isFavourite: itemA.isFavourite,
+            hasMarker: itemA.hasMarker,
+            businessHours: itemA.businessHours,
+            address: itemA.address,
+            phoneNo: itemA.phoneNo,
+            rating: itemA.rating,
+            tags: itemA.tags,
           );
 
           commonElements.add(tempPlace);

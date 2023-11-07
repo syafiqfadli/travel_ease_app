@@ -44,7 +44,6 @@ class _AtractionsPageState extends State<AtractionsPage> {
         placeName: places[index]['placeName'],
         location: places[index]['location'],
         image: places[index]['image'],
-        isClickable: true,
       ),
     );
   }

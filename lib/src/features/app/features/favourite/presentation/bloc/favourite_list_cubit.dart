@@ -43,6 +43,8 @@ class FavouriteListCubit extends Cubit<FavouriteListState> {
       businessHours: place.businessHours,
       address: place.address,
       phoneNo: place.phoneNo,
+      rating: place.rating,
+      tags: place.tags,
     );
 
     await appRepo.setPlacesCache(
