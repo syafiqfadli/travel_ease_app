@@ -11,7 +11,6 @@ class PlaceEntity extends Equatable {
   final bool isFavourite;
   final bool hasMarker;
   final double rating;
-  final List<String> tags;
   final String address;
   final String phoneNo;
 
@@ -24,7 +23,6 @@ class PlaceEntity extends Equatable {
     required this.hasMarker,
     required this.businessHours,
     required this.rating,
-    required this.tags,
     required this.address,
     required this.phoneNo,
   });
@@ -39,7 +37,6 @@ class PlaceEntity extends Equatable {
         hasMarker,
         businessHours,
         rating,
-        tags,
         address,
         phoneNo,
       ];
@@ -54,7 +51,6 @@ class PlaceEntity extends Equatable {
       'hasMarker': hasMarker,
       'businessHours': businessHours.map((data) => data).toList(),
       'rating': rating,
-      'tags': tags.map((data) => data).toList(),
       'address': address,
       'phoneNo': phoneNo,
     };

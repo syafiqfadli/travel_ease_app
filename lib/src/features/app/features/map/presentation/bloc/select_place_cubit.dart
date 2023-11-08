@@ -44,7 +44,6 @@ class SelectPlaceCubit extends Cubit<PlaceEntity?> {
       address: place.address,
       phoneNo: place.phoneNo,
       rating: place.rating,
-      tags: place.tags,
     );
 
     await appRepo.setPlacesCache(
@@ -69,7 +68,6 @@ class SelectPlaceCubit extends Cubit<PlaceEntity?> {
       address: place.address,
       phoneNo: place.phoneNo,
       rating: place.rating,
-      tags: place.tags,
     );
 
     await appRepo.setPlacesCache(

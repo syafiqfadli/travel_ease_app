@@ -26,6 +26,7 @@ class HasResult extends StatelessWidget {
             IconButton(
               onPressed: () {
                 context.read<NearbyPlacesCubit>().searchPlaces();
+                context.read<PlaceDetailsCubit>().reset();
               },
               icon: const Icon(
                 Icons.restart_alt_rounded,

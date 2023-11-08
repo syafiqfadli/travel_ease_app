@@ -34,4 +34,8 @@ class PlaceDetailsCubit extends Cubit<PlaceDetailsState> {
       (place) => emit(PlaceDetailsLoaded(place: place)),
     );
   }
+
+  void reset() {
+    emit(PlaceDetailsInitial());
+  }
 }

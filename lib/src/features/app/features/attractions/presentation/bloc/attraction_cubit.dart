@@ -18,16 +18,21 @@ class AttractionCubit extends Cubit<AttractionState> {
   ) async {
     emit(AttractionLoading(message: 'Finding places in $placeName...'));
 
+    final apiPlacesEither = await appRepo.placeList();
+
     final placesEither = await appRepo.getNearbyCache(
       key: LocalKey.attractionKey,
       placeName: placeName,
       location: locationEntity,
     );
 
+    final apiPlaces = apiPlacesEither.getOrElse(() => []);
     final places = placesEither.getOrElse(() => []);
 
     if (places.isNotEmpty) {
-      emit(AttractionLoaded(places: places));
+      final pricePlaces = _getPlacesWithPrice(places, apiPlaces);
+
+      emit(AttractionLoaded(places: pricePlaces));
       return;
     }
 
@@ -63,7 +68,43 @@ class AttractionCubit extends Cubit<AttractionState> {
     final tourist = touristEither.getOrElse(() => []);
 
     final placeList = [...museum, ...aquarium, ...tourist];
+    final pricePlaces = _getPlacesWithPrice(placeList, apiPlaces);
 
-    emit(AttractionLoaded(places: placeList));
+    emit(AttractionLoaded(places: pricePlaces));
+  }
+
+  List<PlaceEntity> _getPlacesWithPrice(
+    List<PlaceEntity> listA,
+    List<PlaceEntity> listB,
+  ) {
+    List<PlaceEntity> commonElements = [];
+
+    for (var itemA in listA) {
+      for (var i = 0; i < listB.length; i++) {
+        if (itemA.placeId == listB[i].placeId) {
+          final tempPlace = PlaceEntity(
+            placeId: itemA.placeId,
+            placeName: itemA.placeName,
+            prices: listB[i].prices,
+            location: itemA.location,
+            isFavourite: itemA.isFavourite,
+            hasMarker: itemA.hasMarker,
+            businessHours: itemA.businessHours,
+            address: itemA.address,
+            phoneNo: itemA.phoneNo,
+            rating: itemA.rating,
+          );
+
+          commonElements.add(tempPlace);
+          break;
+        }
+
+        if (itemA.placeId != listB[i].placeId && i == listB.length - 1) {
+          commonElements.add(itemA);
+        }
+      }
+    }
+
+    return commonElements;
   }
 }

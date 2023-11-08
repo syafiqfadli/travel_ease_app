@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:travel_ease_app/src/core/app/presentation/widgets/column_builder.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
-import 'package:travel_ease_app/src/core/app/presentation/widgets/column_builder.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/pages/route_page.dart';
 
 class DialogService {
@@ -111,22 +111,32 @@ class DialogService {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      ColumnBuilder(
-                        itemCount: places[placeIndex].prices.length,
-                        itemBuilder: (context, priceIndex) {
-                          final String category =
-                              places[placeIndex].prices[priceIndex].category;
-                          final double price =
-                              places[placeIndex].prices[priceIndex].price;
-        
-                          return Row(
-                            children: [
-                              Text("$category: "),
-                              Text("RM${price.toStringAsFixed(2)} "),
-                            ],
-                          );
-                        },
-                      )
+                      places[placeIndex].prices.isEmpty
+                          ? const Text('N/A')
+                          : Row(
+                              children: [
+                                ColumnBuilder(
+                                  itemCount: places[placeIndex].prices.length,
+                                  itemBuilder: (context, index) {
+                                    final String category = places[placeIndex]
+                                        .prices[index]
+                                        .category;
+
+                                    return Text("$category: ");
+                                  },
+                                ),
+                                ColumnBuilder(
+                                  itemCount: places[placeIndex].prices.length,
+                                  itemBuilder: (context, index) {
+                                    final double price =
+                                        places[placeIndex].prices[index].price;
+
+                                    return Text(
+                                        "RM${price.toStringAsFixed(2)} ");
+                                  },
+                                ),
+                              ],
+                            )
                     ],
                   ),
                 );

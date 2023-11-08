@@ -29,47 +29,64 @@ class AttractionListCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: AutoSizeText(
                       place.placeName,
-                      maxFontSize: 20,
-                      minFontSize: 18,
+                      maxFontSize: 22,
+                      minFontSize: 20,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
                 const SizedBox(height: 15),
-                Row(
-                  children: [
-                    const Text('Rating: '),
-                    Text(place.rating.toStringAsFixed(1)),
-                  ],
-                ),
-                const SizedBox(height: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Tags:'),
-                    ColumnBuilder(
-                      itemCount: place.tags.take(3).length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: PrimaryColor.navyBlack,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(10),
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 5,
-                            horizontal: 10,
-                          ),
-                          margin: const EdgeInsets.symmetric(vertical: 5),
-                          child: Text(
-                            place.tags[index],
-                            style: TextStyle(color: PrimaryColor.pureWhite),
-                          ),
-                        );
-                      },
-                    )
+                    const Text(
+                      'Rating',
+                      style: TextStyle(decoration: TextDecoration.underline),
+                    ),
+                    Text(
+                      place.rating.toStringAsFixed(1),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Prices',
+                      style: TextStyle(decoration: TextDecoration.underline),
+                    ),
+                    const SizedBox(height: 5),
+                    place.prices.isEmpty
+                        ? const Text('N/A')
+                        : Row(
+                            children: [
+                              ColumnBuilder(
+                                itemCount: place.prices.length,
+                                itemBuilder: (context, index) {
+                                  final String category =
+                                      place.prices[index].category;
+
+                                  return Text(
+                                    "$category: ",
+                                  );
+                                },
+                              ),
+                              ColumnBuilder(
+                                itemCount: place.prices.length,
+                                itemBuilder: (context, index) {
+                                  final double price =
+                                      place.prices[index].price;
+
+                                  return Text(
+                                    "RM${price.toStringAsFixed(2)}",
+                                  );
+                                },
+                              ),
+                            ],
+                          )
                   ],
                 ),
               ],

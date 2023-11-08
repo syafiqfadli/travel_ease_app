@@ -28,42 +28,57 @@ class RouteCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${index + 1}'),
-                SizedBox(
-                  width: 250,
-                  height: 100,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: AutoSizeText(
-                          place.placeName,
-                          maxLines: 2,
-                          minFontSize: 14,
-                          style: const TextStyle(
-                            fontSize: 18,
+                Row(
+                  children: [
+                    Text('${index + 1}'),
+                    Container(
+                      height: 100,
+                      width: 250,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: AutoSizeText(
+                              place.placeName,
+                              maxLines: 2,
+                              minFontSize: 16,
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      ColumnBuilder(
-                        itemCount: place.prices.length,
-                        itemBuilder: (context, priceIndex) {
-                          final String category =
-                              place.prices[priceIndex].category;
-                          final double price = place.prices[priceIndex].price;
+                          const SizedBox(height: 10),
+                          place.prices.isEmpty
+                              ? const Text('N/A')
+                              : Row(
+                                  children: [
+                                    ColumnBuilder(
+                                      itemCount: place.prices.length,
+                                      itemBuilder: (context, index) {
+                                        final String category =
+                                            place.prices[index].category;
 
-                          return Row(
-                            children: [
-                              Text("$category: "),
-                              Text("RM${price.toStringAsFixed(2)} "),
-                            ],
-                          );
-                        },
-                      )
-                    ],
-                  ),
+                                        return Text("$category: ");
+                                      },
+                                    ),
+                                    ColumnBuilder(
+                                      itemCount: place.prices.length,
+                                      itemBuilder: (context, index) {
+                                        final double price =
+                                            place.prices[index].price;
+
+                                        return Text(
+                                            "RM${price.toStringAsFixed(2)} ");
+                                      },
+                                    ),
+                                  ],
+                                )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 IconButton(
                   onPressed: () {
