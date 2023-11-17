@@ -45,25 +45,22 @@ class _NearMePageState extends State<NearMePage> {
             }
 
             return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.public, size: 80),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _findNearby,
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(200, 50),
-                        backgroundColor: PrimaryColor.navyBlack,
-                      ),
-                      child: const Text(
-                        "Find Nearby Place",
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.public, size: 80),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _findNearby,
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(200, 50),
+                      backgroundColor: PrimaryColor.navyBlack,
                     ),
-                  ],
-                ),
+                    child: const Text(
+                      "Find Nearby Place",
+                    ),
+                  ),
+                ],
               ),
             );
           },

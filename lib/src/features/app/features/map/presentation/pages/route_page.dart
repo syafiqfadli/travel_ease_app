@@ -1,17 +1,21 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
+import 'package:travel_ease_app/src/core/utils/helpers.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
-import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/bloc/set_page_cubit.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/pages/app_page.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/widgets/loading_status.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/calculate_route_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/marker_list_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/place_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/polyline_list_cubit.dart';
-import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/show_route_cubit.dart';
-import 'package:travel_ease_app/src/features/app/features/map/presentation/pages/calculate_page.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/search_places_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/select_place_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/pages/add_route_page.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/map_widget.dart';
-import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/route_card.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/route_result_card.dart';
 
 class RoutePage extends StatefulWidget {
   const RoutePage({super.key});
@@ -21,152 +25,170 @@ class RoutePage extends StatefulWidget {
 }
 
 class _RoutePageState extends State<RoutePage> {
-  final ShowRouteCubit showRouteCubit = appInjector<ShowRouteCubit>();
+  final SetPageCubit setPageCubit = appInjector<SetPageCubit>();
+  final CalculateRouteCubit calculateRouteCubit =
+      appInjector<CalculateRouteCubit>();
   final MarkerListCubit markerListCubit = appInjector<MarkerListCubit>();
   final PolylineListCubit polylineListCubit = appInjector<PolylineListCubit>();
-
-  final Completer<GoogleMapController> googleController =
-      Completer<GoogleMapController>();
+  final SearchPlacesCubit searchPlacesCubit = appInjector<SearchPlacesCubit>();
+  final SelectPlaceCubit selectPlaceCubit = appInjector<SelectPlaceCubit>();
+  final PlaceListCubit placeListCubit = appInjector<PlaceListCubit>();
 
   @override
   void initState() {
     super.initState();
-    showRouteCubit.getRouteList();
+    calculateRouteCubit.calculateRoute();
+    markerListCubit.getMarkerList();
   }
 
   @override
   void dispose() {
     super.dispose();
-    showRouteCubit.reset();
+    placeListCubit.clearList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final height =
-        MediaQuery.of(context).size.height - AppBar().preferredSize.height;
+    final height = MediaQuery.of(context).size.height * 0.5;
+    final width = MediaQuery.of(context).size.width;
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: showRouteCubit),
+        BlocProvider.value(value: setPageCubit),
+        BlocProvider.value(value: calculateRouteCubit),
         BlocProvider.value(value: markerListCubit),
         BlocProvider.value(value: polylineListCubit),
+        BlocProvider.value(value: searchPlacesCubit),
       ],
-      child: BlocListener<ShowRouteCubit, List<PlaceEntity>>(
-        listener: (context, places) {
-          if (places.length >= 2) {
-            for (var i = 0; i < places.length; i++) {
-              showRouteCubit.computePath(i);
-            }
-          }
+      child: WillPopScope(
+        onWillPop: () {
+          _navigateToMapPage();
+          return Future.value(true);
         },
-        child: WillPopScope(
-          onWillPop: () {
-            Navigator.of(context).pop(true);
-            return Future.value(true);
-          },
-          child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: PrimaryColor.navyBlack,
-              leading: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-                icon: const Icon(Icons.arrow_back_ios),
-              ),
-              title: const Text('VIEW ROUTES'),
-              centerTitle: true,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Routes'),
+            backgroundColor: PrimaryColor.navyBlack,
+            leading: IconButton(
+              onPressed: _navigateToMapPage,
+              icon: const Icon(Icons.arrow_back_ios),
             ),
-            body: BlocBuilder<ShowRouteCubit, List<PlaceEntity>>(
-              builder: (context, places) {
-                if (places.isEmpty) {
-                  return const Center(
-                    child: Text("No route to show yet."),
-                  );
-                }
+            actions: [
+              BlocBuilder<CalculateRouteCubit, CalculateRouteState>(
+                builder: (context, state) {
+                  if (state is CalculateRouteLoaded) {
+                    return state.places.length <= 3
+                        ? IconButton(
+                            onPressed: () async {
+                              final bool result = await Navigator.of(context)
+                                  .push(MaterialPageRoute(
+                                builder: (context) => const AddRoutePage(),
+                              ));
 
-                if (places.isNotEmpty) {
-                  CameraPosition initPosition = CameraPosition(
-                    target: LatLng(
-                      places[0].location.latitude,
-                      places[0].location.longitude,
-                    ),
-                    zoom: 13,
-                  );
+                              if (result) {
+                                calculateRouteCubit.calculateRoute();
+                              }
+                            },
+                            icon: const Icon(Icons.add),
+                          )
+                        : const SizedBox.shrink();
+                  }
 
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: height * 0.4,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: ListView.builder(
-                              itemCount: places.length,
-                              itemBuilder: (context, index) {
-                                final isLastPlace = index == places.length - 1;
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
+          ),
+          body: BlocBuilder<CalculateRouteCubit, CalculateRouteState>(
+            builder: (context, state) {
+              if (state is CalculateRouteLoaded) {
+                final initPosition = CameraPosition(
+                  target: LatLng(
+                    state.initPosition.latitude,
+                    state.initPosition.longitude,
+                  ),
+                  zoom: 12,
+                );
 
-                                return RouteCard(
-                                  index: index,
-                                  place: places[index],
-                                  isLastPlace: isLastPlace,
-                                );
-                              },
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: height * 0.7,
+                        child: Stack(
+                          children: [
+                            MapWidget(
+                              initPosition: initPosition,
+                              isRoute: true,
                             ),
-                          ),
-                        ),
-                        Divider(
-                          color: PrimaryColor.navyBlack,
-                          height: 20,
-                          indent: 20,
-                          endIndent: 20,
-                        ),
-                        SizedBox(
-                          height: height * 0.5,
-                          child: Stack(
-                            children: [
-                              MapWidget(
-                                initPosition: initPosition,
-                                isRoute: true,
-                                googleController: googleController,
+                            Container(
+                              height: 50,
+                              width: width,
+                              decoration: BoxDecoration(
+                                color: PrimaryColor.pureGrey,
                               ),
-                              Positioned(
-                                top: 10,
-                                left: 10,
-                                child: Visibility(
-                                  visible: places.length >= 2 ? true : false,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const CalculatePage(),
-                                        ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.all(15),
-                                      backgroundColor: PrimaryColor.navyBlack,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  child: Text(
+                                    StringHelper.setPlaceDirection(
+                                      state.places,
                                     ),
-                                    child: const Text('Calculate'),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: PrimaryColor.pureWhite,
+                                    ),
                                   ),
                                 ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  );
-                }
-
-                return const Center(
-                  child: Text("No route to show yet."),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: height + 10,
+                        child: Column(
+                          children: [
+                            RouteResultCard(
+                              mode: 'car',
+                              cost: state.cost,
+                              direction: state.direction,
+                            ),
+                            RouteResultCard(
+                              mode: 'motor',
+                              cost: state.cost,
+                              direction: state.direction,
+                            ),
+                            RouteResultCard(
+                              mode: 'walk',
+                              cost: state.cost,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 );
-              },
-            ),
+              }
+
+              if (state is CalculateRouteLoading) {
+                return LoadingStatus(status: state.status);
+              }
+
+              return const SizedBox.shrink();
+            },
           ),
         ),
       ),
     );
+  }
+
+  void _navigateToMapPage() {
+    setPageCubit.setPage(2);
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => const AppPage(),
+    ));
   }
 }

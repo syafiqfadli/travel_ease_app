@@ -11,7 +11,6 @@ class PlaceModel extends PlaceEntity {
     required super.address,
     required super.phoneNo,
     required super.isFavourite,
-    required super.hasMarker,
     required super.businessHours,
     required super.rating,
   });
@@ -25,7 +24,6 @@ class PlaceModel extends PlaceEntity {
           : [],
       location: LocationModel.fromJson(parseJson),
       isFavourite: parseJson['isFavourite'] ?? false,
-      hasMarker: parseJson['hasMarker'] ?? false,
       businessHours: parseJson['current_opening_hours'] != null
           ? stringList(parseJson['current_opening_hours']['weekday_text'])
           : [],

@@ -1,16 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:travel_ease_app/src/core/app/presentation/widgets/column_builder.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/helpers.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/direction_entity.dart';
-import 'package:travel_ease_app/src/core/app/presentation/widgets/column_builder.dart';
 
-class CalculateResultCard extends StatelessWidget {
+class RouteResultCard extends StatelessWidget {
   final String mode;
   final Map<String, double> cost;
   final DirectionEntity? direction;
 
-  const CalculateResultCard({
+  const RouteResultCard({
     super.key,
     required this.mode,
     required this.cost,
@@ -19,13 +19,11 @@ class CalculateResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
+    return Expanded(
       child: Container(
-        height: 150,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
         decoration: BoxDecoration(
           border: Border.all(color: PrimaryColor.navyBlack),
-          borderRadius: const BorderRadius.all(Radius.circular(30)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -97,40 +95,47 @@ class CalculateResultCard extends StatelessWidget {
           title,
           style: const TextStyle(fontSize: 16),
         ),
-        ColumnBuilder(
-          itemCount: cost.length,
-          itemBuilder: (context, index) {
-            String category = cost.keys.elementAt(index);
-            double total = cost[category]!;
+        cost.isEmpty
+            ? const Text(
+                'N/A',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : ColumnBuilder(
+                itemCount: cost.length,
+                itemBuilder: (context, index) {
+                  String category = cost.keys.elementAt(index);
+                  double total = cost[category]!;
 
-            return SizedBox(
-              width: 120,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: AutoSizeText(
-                      'RM${total.toStringAsFixed(2)}',
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  return SizedBox(
+                    width: 120,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: AutoSizeText(
+                            'RM${total.toStringAsFixed(2)}',
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          child: AutoSizeText(
+                            '($category)',
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Flexible(
-                    child: AutoSizeText(
-                      '($category)',
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
-            );
-          },
-        ),
       ],
     );
   }

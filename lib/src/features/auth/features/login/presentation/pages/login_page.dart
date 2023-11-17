@@ -41,7 +41,6 @@ class _LoginPageState extends State<LoginPage> {
           if (state is LoginError) {
             DialogService.showMessage(
               title: "Error",
-              hasAction: false,
               icon: Icons.error,
               message: state.message,
               context: context,

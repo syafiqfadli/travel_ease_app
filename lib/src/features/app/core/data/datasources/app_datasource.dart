@@ -251,16 +251,11 @@ class AppDataSourceImpl implements AppDataSource {
 
     if (emailIndex != -1) {
       final places = cacheList[emailIndex]['places'] as List;
-      final placeIndex = places.indexWhere(
-        (element) => element['placeId'] == placeEntity.placeId,
-      );
 
-      if (placeIndex != -1) {
-        for (var data in places) {
-          if (data['placeId'] == placeEntity.placeId) {
-            places.removeAt(placeIndex);
-            break;
-          }
+      for (var data in places) {
+        if (data['placeId'] == placeEntity.placeId) {
+          places.remove(data);
+          break;
         }
       }
 

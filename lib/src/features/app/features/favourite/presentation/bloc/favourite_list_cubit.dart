@@ -39,7 +39,6 @@ class FavouriteListCubit extends Cubit<FavouriteListState> {
       prices: place.prices,
       location: place.location,
       isFavourite: false,
-      hasMarker: place.hasMarker,
       businessHours: place.businessHours,
       address: place.address,
       phoneNo: place.phoneNo,

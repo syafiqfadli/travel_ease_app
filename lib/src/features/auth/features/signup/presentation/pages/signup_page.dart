@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:travel_ease_app/src/features/auth/core/presentation/widgets/base_auth.dart';
 import 'package:travel_ease_app/src/core/app/presentation/widgets/loading.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/input_validator.dart';
@@ -9,6 +8,7 @@ import 'package:travel_ease_app/src/features/app/core/presentation/pages/app_pag
 import 'package:travel_ease_app/src/features/auth/auth_injector.dart';
 import 'package:travel_ease_app/src/features/auth/core/domain/entities/auth_entity.dart';
 import 'package:travel_ease_app/src/features/auth/core/presentation/widgets/auth_input_field.dart';
+import 'package:travel_ease_app/src/features/auth/core/presentation/widgets/base_auth.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/bloc/login_cubit.dart';
 import 'package:travel_ease_app/src/features/auth/features/login/presentation/pages/login_page.dart';
 import 'package:travel_ease_app/src/features/auth/features/signup/presentation/bloc/signup_cubit.dart';
@@ -47,7 +47,6 @@ class _SignUpPageState extends State<SignUpPage> {
               if (state is SignUpError) {
                 DialogService.showMessage(
                   title: "Error",
-                  hasAction: false,
                   icon: Icons.error,
                   message: state.message,
                   context: context,
@@ -57,7 +56,6 @@ class _SignUpPageState extends State<SignUpPage> {
               if (state is SignUpSuccessful) {
                 await DialogService.showMessage(
                   title: "Successful",
-                  hasAction: false,
                   icon: Icons.check,
                   message: state.message,
                   context: context,

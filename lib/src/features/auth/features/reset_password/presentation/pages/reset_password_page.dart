@@ -43,7 +43,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             DialogService.showMessage(
               title: "Error",
               icon: Icons.error,
-              hasAction: false,
               message: state.message,
               context: context,
             );
@@ -53,7 +52,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             await DialogService.showMessage(
               title: "Successful",
               icon: Icons.check,
-              hasAction: false,
               message: state.message,
               context: context,
             );

@@ -21,11 +21,23 @@ final class CalculateRouteLoading extends CalculateRouteState {
 final class CalculateRouteLoaded extends CalculateRouteState {
   final DirectionEntity direction;
   final Map<String, double> cost;
+  final LocationEntity initPosition;
+  final List<PlaceEntity> places;
 
-  const CalculateRouteLoaded({required this.direction, required this.cost});
+  const CalculateRouteLoaded({
+    required this.direction,
+    required this.cost,
+    required this.initPosition,
+    required this.places,
+  });
 
   @override
-  List<Object> get props => [direction, cost];
+  List<Object> get props => [
+        direction,
+        cost,
+        initPosition,
+        places,
+      ];
 }
 
 final class CalculateRouteError extends CalculateRouteState {

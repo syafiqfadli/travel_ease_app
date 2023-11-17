@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_map_polyline_new/google_map_polyline_new.dart';
 import 'package:travel_ease_app/src/features/app/core/data/datasources/app_datasource.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/repositories/app_repo.dart';
+import 'package:travel_ease_app/src/features/app/core/presentation/bloc/set_page_cubit.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/user_info_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/attractions/presentation/bloc/attraction_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/favourite/presentation/bloc/favourite_list_cubit.dart';
@@ -9,11 +10,11 @@ import 'package:travel_ease_app/src/features/app/features/map/data/datasources/m
 import 'package:travel_ease_app/src/features/app/features/map/domain/repositories/map_repo.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/calculate_route_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/marker_list_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/place_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/polyline_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/route_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/search_places_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/select_place_cubit.dart';
-import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/show_route_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/near_me/presentation/bloc/nearby_places_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/near_me/presentation/bloc/place_details_cubit.dart';
 
@@ -45,6 +46,8 @@ void appInit() {
   );
 
   //Bloc
+  appInjector.registerLazySingleton<SetPageCubit>(() => SetPageCubit());
+
   appInjector.registerLazySingleton<UserInfoCubit>(
     () => UserInfoCubit(
       appRepo: appInjector(),
@@ -87,23 +90,12 @@ void appInit() {
   appInjector.registerLazySingleton<MarkerListCubit>(
     () => MarkerListCubit(
       appRepo: appInjector(),
-      userInfoCubit: appInjector(),
-      selectPlaceCubit: appInjector(),
+      placeListCubit: appInjector(),
     ),
   );
 
   appInjector.registerLazySingleton<PolylineListCubit>(
     () => PolylineListCubit(),
-  );
-
-  appInjector.registerLazySingleton<ShowRouteCubit>(
-    () => ShowRouteCubit(
-      polylineListCubit: appInjector(),
-      markerListCubit: appInjector(),
-      routeCubit: appInjector(),
-      appRepo: appInjector(),
-      userInfoCubit: appInjector(),
-    ),
   );
 
   appInjector.registerLazySingleton<RouteCubit>(
@@ -117,7 +109,15 @@ void appInit() {
   appInjector.registerFactory<CalculateRouteCubit>(
     () => CalculateRouteCubit(
       appRepo: appInjector(),
-      showRouteCubit: appInjector(),
+      markerListCubit: appInjector(),
+      selectPlaceCubit: appInjector(),
+      polylineListCubit: appInjector(),
+      placeListCubit: appInjector(),
+      routeCubit: appInjector(),
     ),
+  );
+
+  appInjector.registerLazySingleton<PlaceListCubit>(
+    () => PlaceListCubit(),
   );
 }

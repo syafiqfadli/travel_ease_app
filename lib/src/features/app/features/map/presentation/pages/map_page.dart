@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,16 +7,26 @@ import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/marker_list_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/place_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/polyline_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/search_places_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/select_place_cubit.dart';
-import 'package:travel_ease_app/src/features/app/features/map/presentation/pages/route_page.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/map_widget.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/place_card.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/widgets/place_details_card.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+  final bool isRoute;
+  final CameraPosition initPosition;
+
+  const MapPage({
+    super.key,
+    this.isRoute = false,
+    this.initPosition = const CameraPosition(
+      target: LatLng(2.1926, 102.2505),
+      zoom: 14.45,
+    ),
+  });
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -29,21 +37,20 @@ class _MapPageState extends State<MapPage> {
   final SelectPlaceCubit selectPlaceCubit = appInjector<SelectPlaceCubit>();
   final MarkerListCubit markerListCubit = appInjector<MarkerListCubit>();
   final PolylineListCubit polylineListCubit = appInjector<PolylineListCubit>();
+  final PlaceListCubit placeListCubit = appInjector<PlaceListCubit>();
+
   final TextEditingController placeController = TextEditingController();
 
-  final Completer<GoogleMapController> googleController =
-      Completer<GoogleMapController>();
-
-  static const CameraPosition initPosition = CameraPosition(
-    target: LatLng(2.1926, 102.2505),
-    zoom: 14.45,
-  );
+  @override
+  void initState() {
+    super.initState();
+    searchPlaceCubit.clearSearch();
+    selectPlaceCubit.removePlace();
+  }
 
   @override
   void dispose() {
     super.dispose();
-    searchPlaceCubit.clearSearch();
-    selectPlaceCubit.removePlace();
     placeController.dispose();
   }
 
@@ -57,48 +64,33 @@ class _MapPageState extends State<MapPage> {
         BlocProvider.value(value: selectPlaceCubit),
         BlocProvider.value(value: markerListCubit),
         BlocProvider.value(value: polylineListCubit),
+        BlocProvider.value(value: placeListCubit),
       ],
       child: Stack(
         children: [
           MapWidget(
-            initPosition: initPosition,
-            isRoute: false,
-            googleController: googleController,
+            initPosition: widget.initPosition,
+            isRoute: widget.isRoute,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomInputField(
-                        textController: placeController,
-                        hint: "Search Place...",
-                        suffixIcon: IconButton(
-                          onPressed: _searchPlace,
-                          icon: const Icon(Icons.search),
-                        ),
-                        hasBorder: true,
-                        onFieldSubmitted: (_) => _searchPlace(),
-                        onChanged: (value) {
-                          if (value!.isEmpty) {
-                            searchPlaceCubit.clearSearch();
-                            selectPlaceCubit.removePlace();
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: _navigateToRoutePage,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(10),
-                        backgroundColor: PrimaryColor.navyBlack,
-                      ),
-                      child: const Icon(Icons.airline_stops),
-                    )
-                  ],
+                CustomInputField(
+                  textController: placeController,
+                  hint: "Search Place...",
+                  suffixIcon: IconButton(
+                    onPressed: _searchPlace,
+                    icon: const Icon(Icons.search),
+                  ),
+                  hasBorder: true,
+                  onFieldSubmitted: (_) => _searchPlace(),
+                  onChanged: (value) {
+                    if (value!.isEmpty) {
+                      searchPlaceCubit.clearSearch();
+                      selectPlaceCubit.removePlace();
+                    }
+                  },
                 ),
                 const SizedBox(height: 5),
                 BlocBuilder<SearchPlacesCubit, SearchPlacesState>(
@@ -193,7 +185,7 @@ class _MapPageState extends State<MapPage> {
                       ? const SizedBox.shrink()
                       : PlaceDetailsCard(
                           place: state,
-                          completerController: googleController,
+                          isRoute: widget.isRoute,
                         ),
                 ),
               );
@@ -208,20 +200,5 @@ class _MapPageState extends State<MapPage> {
     final String query = placeController.text;
 
     searchPlaceCubit.searchPlaces(query);
-  }
-
-  void _navigateToRoutePage() async {
-    final bool hasResult = await Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => const RoutePage(),
-    ));
-
-    if (hasResult) {
-      markerListCubit.getMarkerList();
-      final place = selectPlaceCubit.state;
-
-      if (place != null) {
-        selectPlaceCubit.placeSelected(place);
-      }
-    }
   }
 }

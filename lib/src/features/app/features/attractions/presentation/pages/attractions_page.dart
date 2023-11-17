@@ -2,14 +2,14 @@ import 'package:flutter/widgets.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/location_entity.dart';
 import 'package:travel_ease_app/src/features/app/features/attractions/presentation/widgets/attraction_card.dart';
 
-class AtractionsPage extends StatefulWidget {
-  const AtractionsPage({super.key});
+class AttractionsPage extends StatefulWidget {
+  const AttractionsPage({super.key});
 
   @override
-  State<AtractionsPage> createState() => _AtractionsPageState();
+  State<AttractionsPage> createState() => _AttractionsPageState();
 }
 
-class _AtractionsPageState extends State<AtractionsPage> {
+class _AttractionsPageState extends State<AttractionsPage> {
   final List<Map<String, dynamic>> places = [
     {
       "placeName": 'Ayer Keroh',

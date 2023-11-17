@@ -6,6 +6,7 @@ import 'package:travel_ease_app/src/features/app/core/presentation/bloc/user_inf
 class SelectPlaceCubit extends Cubit<PlaceEntity?> {
   final AppRepo appRepo;
   final UserInfoCubit userInfoCubit;
+
   SelectPlaceCubit({
     required this.appRepo,
     required this.userInfoCubit,
@@ -39,31 +40,6 @@ class SelectPlaceCubit extends Cubit<PlaceEntity?> {
       prices: place.prices,
       location: place.location,
       isFavourite: !place.isFavourite,
-      hasMarker: place.hasMarker,
-      businessHours: place.businessHours,
-      address: place.address,
-      phoneNo: place.phoneNo,
-      rating: place.rating,
-    );
-
-    await appRepo.setPlacesCache(
-      user.userEntity.email,
-      tempPlace,
-    );
-
-    emit(tempPlace);
-  }
-
-  void setMarker(PlaceEntity place) async {
-    final user = userInfoCubit.state as UserInfoLoaded;
-
-    final tempPlace = PlaceEntity(
-      placeId: place.placeId,
-      placeName: place.placeName,
-      prices: place.prices,
-      location: place.location,
-      isFavourite: place.isFavourite,
-      hasMarker: !place.hasMarker,
       businessHours: place.businessHours,
       address: place.address,
       phoneNo: place.phoneNo,

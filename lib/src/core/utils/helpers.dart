@@ -1,3 +1,5 @@
+import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
+
 class TimeHelper {
   static String convertSecondsToTime(int seconds) {
     if (seconds < 60) {
@@ -26,5 +28,17 @@ class StringHelper {
     }
 
     return input[0].toUpperCase() + input.substring(1).toLowerCase();
+  }
+
+  static String setPlaceDirection(List<PlaceEntity> places) {
+    if (places.isEmpty) {
+      return '';
+    }
+
+    String result = places
+        .map((place) => place.placeName)
+        .reduce((value, element) => '$value -> $element');
+
+    return result;
   }
 }

@@ -67,7 +67,6 @@ class _MainAppState extends State<MainApp> {
             await DialogService.showMessage(
               title: 'Error',
               message: state.message,
-              hasAction: false,
               icon: Icons.error,
               context: context,
             );

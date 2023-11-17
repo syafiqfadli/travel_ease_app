@@ -88,7 +88,6 @@ class AttractionCubit extends Cubit<AttractionState> {
             prices: listB[i].prices,
             location: itemA.location,
             isFavourite: itemA.isFavourite,
-            hasMarker: itemA.hasMarker,
             businessHours: itemA.businessHours,
             address: itemA.address,
             phoneNo: itemA.phoneNo,
