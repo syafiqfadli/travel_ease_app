@@ -11,72 +11,93 @@ class HasDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: PrimaryColor.navyBlack,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 5,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: PrimaryColor.navyBlack,
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: AutoSizeText(
-                place.placeName,
-                style: TextStyle(color: PrimaryColor.pureWhite, fontSize: 16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 5,
+                ),
+                child: AutoSizeText(
+                  place.placeName,
+                  style: TextStyle(color: PrimaryColor.pureWhite, fontSize: 16),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          place.address.isNotEmpty
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.room),
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child: AutoSizeText(place.address),
-                    ),
-                  ],
-                )
-              : const SizedBox.shrink(),
-          Divider(color: PrimaryColor.navyBlack, height: 40),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              place.businessHours.isNotEmpty
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.access_time, size: 30),
-                        const SizedBox(width: 10),
-                        ColumnBuilder(
-                          itemCount: place.businessHours.length,
-                          itemBuilder: (context, index) {
-                            return Text(place.businessHours[index]);
-                          },
-                        ),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-              place.phoneNo.isNotEmpty
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.phone, size: 30),
-                        const SizedBox(width: 10),
-                        Text(place.phoneNo),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-            ],
-          ),
-        ],
+            const SizedBox(height: 10),
+            place.address.isNotEmpty
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.room),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: AutoSizeText(place.address),
+                      ),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+            Divider(color: PrimaryColor.navyBlack, height: 40),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                place.businessHours.isNotEmpty
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.access_time, size: 30),
+                          const SizedBox(width: 10),
+                          ColumnBuilder(
+                            itemCount: place.businessHours.length,
+                            itemBuilder: (context, index) {
+                              final parts =
+                                  place.businessHours[index].split(': ');
+                              final day = parts[0];
+                              final time = parts[1];
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 5,
+                                ),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 100,
+                                      child: Text('$day:'),
+                                    ),
+                                    Text(time)
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(height: 10),
+                place.phoneNo.isNotEmpty
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.phone, size: 30),
+                          const SizedBox(width: 10),
+                          Text(place.phoneNo),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

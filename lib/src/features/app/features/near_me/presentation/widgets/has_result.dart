@@ -19,7 +19,7 @@ class HasResult extends StatelessWidget {
 
     return SingleChildScrollView(
       child: SizedBox(
-        height: height - kToolbarHeight - kBottomNavigationBarHeight,
+        height: height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -35,7 +35,7 @@ class HasResult extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.only(
-                bottom: 30,
+                bottom: 20,
                 left: 20,
                 right: 20,
               ),
@@ -45,7 +45,7 @@ class HasResult extends StatelessWidget {
                     'Results',
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 5),
                   Text(
                     'Check out the places in your area. Click below to view business hours.',
                     style: TextStyle(fontSize: 20),

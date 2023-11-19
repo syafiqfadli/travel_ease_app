@@ -66,16 +66,12 @@ class _AttractionDetailsPageState extends State<AttractionDetailsPage> {
             if (state is AttractionDetailsLoaded) {
               final place = state.place;
 
-              return Column(
-                children: [
-                  ImageSlider(images: images),
-                  SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 20,
-                        left: 20,
-                        right: 20,
-                      ),
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ImageSlider(images: images),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -139,9 +135,7 @@ class _AttractionDetailsPageState extends State<AttractionDetailsPage> {
                                               width: 100,
                                               child: Text('$day:'),
                                             ),
-                                            Text(
-                                              time,
-                                            )
+                                            Text(time)
                                           ],
                                         ),
                                       );
@@ -186,8 +180,8 @@ class _AttractionDetailsPageState extends State<AttractionDetailsPage> {
                         ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }
 
