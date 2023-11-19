@@ -50,4 +50,21 @@ class DialogService {
       ),
     );
   }
+
+  static Future showMaps<T>({
+    required BuildContext context,
+    required Widget child,
+  }) async {
+    return showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(25.0),
+        ),
+      ),
+      builder: (context) {
+        return child;
+      },
+    );
+  }
 }

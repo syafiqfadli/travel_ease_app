@@ -44,6 +44,9 @@ dependencies:
   google_map_polyline_new: ^0.3.0+2
   geolocator: ^10.1.0
   package_info_plus: ^4.2.0
+  map_launcher: ^3.0.1
+  flutter_svg: ^2.0.9
+  flutter_rating_bar: ^4.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -81,8 +84,33 @@ flutter:
   assets:
     - .env
     - assets/images/
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+
+    # Ayer Keroh
+    - assets/images/places/Ayer Keroh/
+    - assets/images/places/Ayer Keroh/Melaka Butterfly & Reptile Sanctuary - ChIJu6t6KUXk0TERAvI--tUUSQU/
+    - assets/images/places/Ayer Keroh/Melaka Botanical Garden - ChIJy73sK6jl0TERL-4fJ_ZuTzs/
+    - assets/images/places/Ayer Keroh/Taman Seribu Bunga (Thousand Flower Garden) - ChIJN0410HTl0TER5bKNvtQoVrg/
+    - assets/images/places/Ayer Keroh/Zoo Melaka - ChIJncgLbajl0TERb2EcpOWX7Rs/
+    - assets/images/places/Ayer Keroh/Taman Buaya & Rekreasi Melaka - ChIJZ4OLWAjl0TERJ3wb4hHwKcU/
+    - assets/images/places/Ayer Keroh/World's Bees Museum - ChIJP1vOwwfl0TER0Y6gidL29qQ/
+    - assets/images/places/Ayer Keroh/Kompleks Kraf Melaka - ChIJM1yQE6vl0TERHC8UYYzkTEM/
+    - assets/images/places/Ayer Keroh/Flyboard Melaka - ChIJy_h4ytfl0TERp-0gDRASe5Q/
+    - assets/images/places/Ayer Keroh/Melaka Wonderland Theme Park & Resort - ChIJTea-Pg_l0TER38wU1pYkWSk/
+    - assets/images/places/Ayer Keroh/Malaysia Heritage Studios - ChIJ-eZI-sbl0TERFif6a_FHCTA/
+
+    # Banda Hilir
+    - assets/images/places/Banda Hilir/
+    - assets/images/places/Banda Hilir/Dutch Square (Red Square) Melaka - ChIJ--gR1N3x0TER9UPh4KKBRFY/
+    - assets/images/places/Banda Hilir/Church of Saint Paul - ChIJq2aiA97x0TER350dNHgCAnk/
+    - assets/images/places/Banda Hilir/Melaka Sultanate Palace Museum - ChIJDwQOGN7x0TERp2vFcEAklvQ/
+    - assets/images/places/Banda Hilir/Christ Church Melaka - ChIJjVnwe97x0TERrV8BeptTmWQ/
+    - assets/images/places/Banda Hilir/Baba & Nyonya Heritage Museum - ChIJfdXRW9zx0TER8SK9p2bE-kg/
+    - assets/images/places/Banda Hilir/Museum of Royal Malaysian Marine. Muzium TLDM - ChIJK916C-fx0TERqxjDOWxR73g/
+    - assets/images/places/Banda Hilir/Malaysia Prison Museum - ChIJBcaGRR7u0TERI12wmh6VFH0/
+    - assets/images/places/Banda Hilir/Taming Sari - ChIJOXdXEefx0TERIBvPIoH5sX8/
+    - assets/images/places/Banda Hilir/A Famosa - ChIJHWino-Dx0TERtWMOoXza5MI/
+    - assets/images/places/Banda Hilir/Melaka River Cruise - ChIJKdrwz93x0TERwWfudAgTzow/
+    - assets/images/places/Banda Hilir/Muzium Samudera - ChIJo4Myeufx0TERril1uGVavRU/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

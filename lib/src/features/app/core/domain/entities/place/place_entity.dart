@@ -51,4 +51,16 @@ class PlaceEntity extends Equatable {
       'phoneNo': phoneNo,
     };
   }
+
+  static get empty => PlaceEntity(
+        placeId: '',
+        placeName: '',
+        prices: const [],
+        location: LocationEntity.empty,
+        isFavourite: false,
+        businessHours: const [],
+        rating: 0,
+        address: '',
+        phoneNo: '',
+      );
 }

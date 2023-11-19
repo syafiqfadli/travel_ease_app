@@ -15,4 +15,9 @@ class LocationEntity extends Equatable {
       'latitude': latitude,
     };
   }
+
+  static get empty => const LocationEntity(
+        longitude: 0,
+        latitude: 0,
+      );
 }

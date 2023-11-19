@@ -1,19 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
-import 'package:travel_ease_app/src/features/app/core/domain/entities/place/location_entity.dart';
 import 'package:travel_ease_app/src/features/app/features/attractions/presentation/pages/attraction_list_page.dart';
 
 class AttractionCard extends StatelessWidget {
   final String placeName;
   final String image;
-  final LocationEntity location;
 
   const AttractionCard({
     super.key,
     required this.placeName,
     required this.image,
-    required this.location,
   });
 
   @override
@@ -25,7 +22,6 @@ class AttractionCard extends StatelessWidget {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => AttractionListPage(
               placeName: placeName,
-              location: location,
             ),
           ));
         },
@@ -37,7 +33,7 @@ class AttractionCard extends StatelessWidget {
                 SizedBox(
                   height: 180,
                   child: Image.asset(
-                    'assets/images/$image',
+                    'assets/images/places/$placeName/$image',
                     fit: BoxFit.fill,
                   ),
                 ),

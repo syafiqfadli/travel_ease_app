@@ -27,8 +27,8 @@ class PlaceModel extends PlaceEntity {
       businessHours: parseJson['current_opening_hours'] != null
           ? stringList(parseJson['current_opening_hours']['weekday_text'])
           : [],
-      address: parseJson['formatted_address'] ?? 'NO_ADDRESS',
-      phoneNo: parseJson['formatted_phone_number'] ?? 'NO_PHONE',
+      address: parseJson['formatted_address'] ?? '',
+      phoneNo: parseJson['formatted_phone_number'] ?? '',
       rating: parseJson['rating'] != null
           ? (parseJson['rating'].runtimeType == int
               ? (parseJson['rating'] as int).toDouble()

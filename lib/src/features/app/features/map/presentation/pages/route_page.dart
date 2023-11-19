@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:travel_ease_app/src/core/app/presentation/widgets/column_builder.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/core/utils/helpers.dart';
+import 'package:travel_ease_app/src/core/utils/services.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/set_page_cubit.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/pages/app_page.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/widgets/loading_status.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/calculate_route_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/marker_list_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/open_map_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/place_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/polyline_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/presentation/bloc/search_places_cubit.dart';
@@ -33,6 +37,7 @@ class _RoutePageState extends State<RoutePage> {
   final SearchPlacesCubit searchPlacesCubit = appInjector<SearchPlacesCubit>();
   final SelectPlaceCubit selectPlaceCubit = appInjector<SelectPlaceCubit>();
   final PlaceListCubit placeListCubit = appInjector<PlaceListCubit>();
+  final OpenMapCubit openMapCubit = OpenMapCubit();
 
   @override
   void initState() {
@@ -59,6 +64,7 @@ class _RoutePageState extends State<RoutePage> {
         BlocProvider.value(value: markerListCubit),
         BlocProvider.value(value: polylineListCubit),
         BlocProvider.value(value: searchPlacesCubit),
+        BlocProvider.value(value: openMapCubit),
       ],
       child: WillPopScope(
         onWillPop: () {
@@ -144,6 +150,18 @@ class _RoutePageState extends State<RoutePage> {
                                 ),
                               ),
                             ),
+                            Positioned(
+                              top: 265,
+                              left: width / 2 - 50,
+                              child: ElevatedButton(
+                                onPressed: _showMaps,
+                                style: ElevatedButton.styleFrom(
+                                  fixedSize: const Size(120, 20),
+                                  backgroundColor: PrimaryColor.navyBlack,
+                                ),
+                                child: const Text('Open Map'),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -190,5 +208,57 @@ class _RoutePageState extends State<RoutePage> {
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (context) => const AppPage(),
     ));
+  }
+
+  void _showMaps() async {
+    await openMapCubit.showAvailableMaps();
+
+    if (!mounted) return;
+
+    final mapList = openMapCubit.state;
+    final place = placeListCubit.state[0];
+
+    DialogService.showMaps(
+      context: context,
+      child: mapList.isEmpty
+          ? const Center(
+              child: Text(
+                'No any map appilcation installed. Please install map application.',
+              ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 30,
+                    horizontal: 15,
+                  ),
+                  child: Text(
+                    'Available Maps:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                ColumnBuilder(
+                  itemCount: mapList.length,
+                  itemBuilder: (context, index) {
+                    final map = mapList[index];
+
+                    return ListTile(
+                      leading: SvgPicture.asset(
+                        map.icon,
+                        height: 30,
+                        width: 30,
+                      ),
+                      title: Text(map.mapName),
+                      onTap: () {
+                        openMapCubit.openMap(place, index);
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+    );
   }
 }

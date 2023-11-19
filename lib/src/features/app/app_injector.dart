@@ -5,6 +5,7 @@ import 'package:travel_ease_app/src/features/app/core/domain/repositories/app_re
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/set_page_cubit.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/bloc/user_info_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/attractions/presentation/bloc/attraction_cubit.dart';
+import 'package:travel_ease_app/src/features/app/features/attractions/presentation/bloc/attraction_details_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/favourite/presentation/bloc/favourite_list_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/map/data/datasources/map_datasource.dart';
 import 'package:travel_ease_app/src/features/app/features/map/domain/repositories/map_repo.dart';
@@ -82,9 +83,7 @@ void appInit() {
   );
 
   appInjector.registerLazySingleton<AttractionCubit>(
-    () => AttractionCubit(
-      appRepo: appInjector(),
-    ),
+    () => AttractionCubit(),
   );
 
   appInjector.registerLazySingleton<MarkerListCubit>(
@@ -119,5 +118,11 @@ void appInit() {
 
   appInjector.registerLazySingleton<PlaceListCubit>(
     () => PlaceListCubit(),
+  );
+
+  appInjector.registerLazySingleton<AttractionDetailsCubit>(
+    () => AttractionDetailsCubit(
+      appRepo: appInjector(),
+    ),
   );
 }

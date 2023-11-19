@@ -54,8 +54,8 @@ class CalculateRouteCubit extends Cubit<CalculateRouteState> {
       isFavourite: false,
       businessHours: const [],
       rating: 0,
-      address: 'NO_ADDRESS',
-      phoneNo: 'NO_PHONE',
+      address: '',
+      phoneNo: '',
     );
 
     final placeList = [currentPlace, ...placeListCubit.state];

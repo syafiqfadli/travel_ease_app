@@ -2,19 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:travel_ease_app/src/core/utils/constants.dart';
 import 'package:travel_ease_app/src/features/app/app_injector.dart';
-import 'package:travel_ease_app/src/features/app/core/domain/entities/place/location_entity.dart';
 import 'package:travel_ease_app/src/features/app/core/presentation/widgets/loading_status.dart';
 import 'package:travel_ease_app/src/features/app/features/attractions/presentation/bloc/attraction_cubit.dart';
 import 'package:travel_ease_app/src/features/app/features/attractions/presentation/widgets/attraction_list_card.dart';
 
 class AttractionListPage extends StatefulWidget {
   final String placeName;
-  final LocationEntity location;
 
   const AttractionListPage({
     super.key,
     required this.placeName,
-    required this.location,
   });
 
   @override
@@ -27,13 +24,15 @@ class _AttractionListPageState extends State<AttractionListPage> {
   @override
   void initState() {
     super.initState();
-    attractionCubit.getPlaces(widget.placeName, widget.location);
+    attractionCubit.getAttractions(widget.placeName);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: attractionCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: attractionCubit),
+      ],
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: PrimaryColor.navyBlack,
@@ -51,6 +50,12 @@ class _AttractionListPageState extends State<AttractionListPage> {
             if (state is AttractionLoaded) {
               final places = state.places;
 
+              if (places.isEmpty) {
+                return const Center(
+                  child: Text('No attractions available currently.'),
+                );
+              }
+
               return GridView.builder(
                 physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics(),
@@ -61,6 +66,7 @@ class _AttractionListPageState extends State<AttractionListPage> {
                   mainAxisExtent: 280,
                 ),
                 itemBuilder: (context, index) => AttractionListCard(
+                  attractionName: widget.placeName,
                   place: places[index],
                 ),
               );

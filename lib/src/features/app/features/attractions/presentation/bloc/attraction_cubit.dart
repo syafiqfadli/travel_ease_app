@@ -1,109 +1,71 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:travel_ease_app/src/core/utils/constants.dart';
+import 'package:flutter/services.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/location_entity.dart';
 import 'package:travel_ease_app/src/features/app/core/domain/entities/place/place_entity.dart';
-import 'package:travel_ease_app/src/features/app/core/domain/repositories/app_repo.dart';
 
 part 'attraction_state.dart';
 
 class AttractionCubit extends Cubit<AttractionState> {
-  final AppRepo appRepo;
+  AttractionCubit() : super(AttractionInitial());
 
-  AttractionCubit({required this.appRepo}) : super(AttractionInitial());
+  void getAttractions(String placeName) async {
+    try {
+      final directoryPath = 'assets/images/places/$placeName';
 
-  void getPlaces(
-    String placeName,
-    LocationEntity locationEntity,
-  ) async {
-    emit(AttractionLoading(message: 'Finding places in $placeName...'));
+      final subDirectories = await _getSubDirectories(directoryPath);
+      subDirectories.removeWhere((element) => element.contains(placeName));
 
-    final apiPlacesEither = await appRepo.placeList();
+      List<PlaceEntity> places = [];
 
-    final placesEither = await appRepo.getNearbyCache(
-      key: LocalKey.attractionKey,
-      placeName: placeName,
-      location: locationEntity,
-    );
+      for (String path in subDirectories) {
+        List<String> parts = path.split(' - ');
+        String placeName = parts[0];
+        String placeId = parts[1];
 
-    final apiPlaces = apiPlacesEither.getOrElse(() => []);
-    final places = placesEither.getOrElse(() => []);
+        final PlaceEntity place = PlaceEntity(
+          placeId: placeId,
+          placeName: placeName,
+          prices: const [],
+          location: LocationEntity.empty,
+          isFavourite: false,
+          businessHours: const [],
+          rating: 0,
+          address: '',
+          phoneNo: '',
+        );
 
-    if (places.isNotEmpty) {
-      final pricePlaces = _getPlacesWithPrice(places, apiPlaces);
+        places.add(place);
+      }
 
-      emit(AttractionLoaded(places: pricePlaces));
-      return;
+      emit(AttractionLoaded(places: places));
+    } catch (error) {
+      emit(const AttractionLoaded(places: []));
     }
-
-    emit(const AttractionLoading(message: 'Finding nearby museum...'));
-
-    final museumEither = await appRepo.searchGoogleNearby(
-      placeName: placeName,
-      type: 'museum',
-      locationEntity: locationEntity,
-      isAttraction: true,
-    );
-
-    emit(const AttractionLoading(message: 'Finding nearby aquarium...'));
-
-    final aquariumEither = await appRepo.searchGoogleNearby(
-      placeName: placeName,
-      type: 'aquarium',
-      locationEntity: locationEntity,
-      isAttraction: true,
-    );
-
-    emit(const AttractionLoading(message: 'Finding nearby attractions...'));
-
-    final touristEither = await appRepo.searchGoogleNearby(
-      placeName: placeName,
-      type: 'tourist_attraction',
-      locationEntity: locationEntity,
-      isAttraction: true,
-    );
-
-    final museum = museumEither.getOrElse(() => []);
-    final aquarium = aquariumEither.getOrElse(() => []);
-    final tourist = touristEither.getOrElse(() => []);
-
-    final placeList = [...museum, ...aquarium, ...tourist];
-    final pricePlaces = _getPlacesWithPrice(placeList, apiPlaces);
-
-    emit(AttractionLoaded(places: pricePlaces));
   }
 
-  List<PlaceEntity> _getPlacesWithPrice(
-    List<PlaceEntity> listA,
-    List<PlaceEntity> listB,
-  ) {
-    List<PlaceEntity> commonElements = [];
+  Future<List<String>> _getSubDirectories(String basePath) async {
+    try {
+      final assetManifestContent =
+          await rootBundle.loadString('AssetManifest.json');
+      final Map<String, dynamic> assetManifest =
+          json.decode(assetManifestContent);
 
-    for (var itemA in listA) {
-      for (var i = 0; i < listB.length; i++) {
-        if (itemA.placeId == listB[i].placeId) {
-          final tempPlace = PlaceEntity(
-            placeId: itemA.placeId,
-            placeName: itemA.placeName,
-            prices: listB[i].prices,
-            location: itemA.location,
-            isFavourite: itemA.isFavourite,
-            businessHours: itemA.businessHours,
-            address: itemA.address,
-            phoneNo: itemA.phoneNo,
-            rating: itemA.rating,
-          );
+      final subDirectories = assetManifest.keys
+          .where((String key) => key.startsWith(basePath))
+          .where((String key) => key.contains('/') && !key.endsWith('/'))
+          .map((String key) {
+            final List<String> parts = key.split('/');
+            return parts[parts.length - 2];
+          })
+          .toSet()
+          .toList();
 
-          commonElements.add(tempPlace);
-          break;
-        }
-
-        if (itemA.placeId != listB[i].placeId && i == listB.length - 1) {
-          commonElements.add(itemA);
-        }
-      }
+      return subDirectories;
+    } catch (error) {
+      throw Error();
     }
-
-    return commonElements;
   }
 }
