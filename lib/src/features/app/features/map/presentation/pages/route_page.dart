@@ -118,80 +118,78 @@ class _RoutePageState extends State<RoutePage> {
                 );
 
                 return SingleChildScrollView(
-                  child: Flexible(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: height * 0.4,
-                          child: Stack(
-                            children: [
-                              MapWidget(
-                                initPosition: initPosition,
-                                isRoute: true,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: height * 0.35,
+                        child: Stack(
+                          children: [
+                            MapWidget(
+                              initPosition: initPosition,
+                              isRoute: true,
+                            ),
+                            Container(
+                              height: 50,
+                              width: width,
+                              decoration: BoxDecoration(
+                                color: PrimaryColor.pureGrey,
                               ),
-                              Container(
-                                height: 50,
-                                width: width,
-                                decoration: BoxDecoration(
-                                  color: PrimaryColor.pureGrey,
-                                ),
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  child: AutoSizeText(
+                                    StringHelper.setPlaceDirection(
+                                      state.places,
                                     ),
-                                    child: AutoSizeText(
-                                      StringHelper.setPlaceDirection(
-                                        state.places,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: PrimaryColor.pureWhite,
-                                      ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: PrimaryColor.pureWhite,
                                     ),
                                   ),
                                 ),
                               ),
-                              Positioned(
-                                top: 50,
-                                right: 10,
-                                child: ElevatedButton(
-                                  onPressed: _showMaps,
-                                  style: ElevatedButton.styleFrom(
-                                    fixedSize: const Size(100, 20),
-                                    backgroundColor: PrimaryColor.navyBlack,
-                                  ),
-                                  child: const Text('Open Map'),
+                            ),
+                            Positioned(
+                              top: 50,
+                              right: 10,
+                              child: ElevatedButton(
+                                onPressed: _showMaps,
+                                style: ElevatedButton.styleFrom(
+                                  fixedSize: const Size(100, 20),
+                                  backgroundColor: PrimaryColor.navyBlack,
                                 ),
+                                child: const Text('Open Map'),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          height: height * 0.5,
-                          child: Column(
-                            children: [
-                              RouteResultCard(
-                                mode: 'car',
-                                cost: state.cost,
-                                direction: state.direction,
-                              ),
-                              RouteResultCard(
-                                mode: 'motor',
-                                cost: state.cost,
-                                direction: state.direction,
-                              ),
-                              RouteResultCard(
-                                mode: 'walk',
-                                cost: state.cost,
-                              ),
-                            ],
-                          ),
+                      ),
+                      SizedBox(
+                        height: height * 0.5,
+                        child: Column(
+                          children: [
+                            RouteResultCard(
+                              mode: 'car',
+                              cost: state.cost,
+                              direction: state.direction,
+                            ),
+                            RouteResultCard(
+                              mode: 'motor',
+                              cost: state.cost,
+                              direction: state.direction,
+                            ),
+                            RouteResultCard(
+                              mode: 'walk',
+                              cost: state.cost,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 );
               }

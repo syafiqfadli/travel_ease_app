@@ -20,6 +20,10 @@ class AttractionListCard extends StatelessWidget {
       padding: const EdgeInsets.all(15),
       child: InkWell(
         onTap: () {
+          if (place.placeId.isEmpty) {
+            return;
+          }
+
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => AttractionDetailsPage(
               attractionName: attractionName,

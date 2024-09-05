@@ -40,7 +40,7 @@ dependencies:
   get_it: ^7.6.0
   get_storage: ^2.1.1
   auto_size_text: ^3.0.0
-  google_maps_flutter: ^2.5.0
+  google_maps_flutter: ^2.9.0
   google_map_polyline_new: ^0.3.0+2
   geolocator: ^10.1.0
   package_info_plus: ^4.2.0
@@ -97,6 +97,7 @@ flutter:
     - assets/images/places/Ayer Keroh/Flyboard Melaka - ChIJy_h4ytfl0TERp-0gDRASe5Q/
     - assets/images/places/Ayer Keroh/Melaka Wonderland Theme Park & Resort - ChIJTea-Pg_l0TER38wU1pYkWSk/
     - assets/images/places/Ayer Keroh/Malaysia Heritage Studios - ChIJ-eZI-sbl0TERFif6a_FHCTA/
+    - assets/images/places/Ayer Keroh/Bayou Lagoon Park Resort - ChIJvSRsY3nv0TERpQOGwzaLR4s/
 
     # Banda Hilir
     - assets/images/places/Banda Hilir/
@@ -111,6 +112,7 @@ flutter:
     - assets/images/places/Banda Hilir/A Famosa - ChIJHWino-Dx0TERtWMOoXza5MI/
     - assets/images/places/Banda Hilir/Melaka River Cruise - ChIJKdrwz93x0TERwWfudAgTzow/
     - assets/images/places/Banda Hilir/Muzium Samudera - ChIJo4Myeufx0TERril1uGVavRU/
+    - assets/images/places/Banda Hilir/Upside Down House Melaka - ChIJec8sWubx0TERsxW6bl8L7g0/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

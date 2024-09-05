@@ -21,10 +21,11 @@ void main() async {
   await GetStorage.init();
   srcInit();
   runApp(
-    const MaterialApp(
+    MaterialApp(
       title: 'Travel Ease',
       debugShowCheckedModeBanner: false,
-      home: MainApp(),
+      theme: ThemeData(useMaterial3: false),
+      home: const MainApp(),
     ),
   );
 }

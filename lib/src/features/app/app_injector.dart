@@ -100,7 +100,7 @@ void appInit() {
   appInjector.registerLazySingleton<RouteCubit>(
     () => RouteCubit(
       googleMapPolyline: GoogleMapPolyline(
-        apiKey: "AIzaSyC1GDs86spPY_yXzohd0CNZ0fjlYH4XBvE",
+        apiKey: "AIzaSyCQGjKAPl3SnLTOCNG4bPG9h4uA4Rg472A",
       ),
     ),
   );
